@@ -191,6 +191,129 @@ const FOODS = [
   {ic:"🍯",id:"honey",ru:"Мёд",en:"Honey",cal:304,p:0.3,f:0,c:82,fib:0.2,pre:3,pro:false,boost:["lac"],sup:["cdi"],sug:"simple"},
   {ic:"🥛",id:"milk",ru:"Молоко",en:"Milk",cal:61,p:3.2,f:3.3,c:4.8,fib:0,pre:2,pro:false,boost:["lac"],sup:[],sug:"simple"},
   {ic:"🧀",id:"chee",ru:"Сыр твёрдый",en:"Hard Cheese",cal:402,p:25,f:33,c:1.3,fib:0,pre:0,pro:false,boost:[],sup:[],sug:"none"},
+
+  // — Spices & Herbs —
+  {ic:"🌿",id:"turm",ru:"Куркума",en:"Turmeric",cal:354,p:8,f:10,c:65,fib:21,pre:7,pro:false,boost:["akk","bif"],sup:["cdi","can","eco"],sug:"complex"},
+  {ic:"🫚",id:"ging",ru:"Имбирь",en:"Ginger",cal:80,p:1.8,f:0.8,c:18,fib:2,pre:6,pro:false,boost:["akk","lac"],sup:["cdi","eco"],sug:"complex"},
+  {ic:"🫙",id:"cinn",ru:"Корица",en:"Cinnamon",cal:247,p:4,f:1.2,c:81,fib:53,pre:7,pro:false,boost:["bif","lac"],sup:["cdi","can"],sug:"complex"},
+  {ic:"🌿",id:"oreg",ru:"Орегано",en:"Oregano",cal:265,p:9,f:4.3,c:68,fib:43,pre:6,pro:false,boost:["bif","lac"],sup:["cdi","eco"],sug:"complex"},
+  {ic:"🌿",id:"thym",ru:"Тимьян",en:"Thyme",cal:101,p:5.6,f:1.7,c:24,fib:14,pre:6,pro:false,boost:["bif"],sup:["cdi"],sug:"complex"},
+  {ic:"🌿",id:"rosm",ru:"Розмарин",en:"Rosemary",cal:131,p:3.3,f:5.9,c:21,fib:14,pre:5,pro:false,boost:["akk","bif"],sup:["cdi"],sug:"complex"},
+  {ic:"🌿",id:"pars",ru:"Петрушка",en:"Parsley",cal:36,p:3,f:0.8,c:6.3,fib:3.3,pre:5,pro:false,boost:["bif","lac"],sup:[],sug:"complex"},
+  {ic:"🌿",id:"dill",ru:"Укроп",en:"Dill",cal:43,p:3.5,f:1.1,c:7,fib:2.1,pre:4,pro:false,boost:["bif"],sup:[],sug:"complex"},
+  {ic:"🌿",id:"basi",ru:"Базилик",en:"Basil",cal:23,p:3.2,f:0.6,c:2.7,fib:1.6,pre:4,pro:false,boost:["bif","lac"],sup:["cdi"],sug:"complex"},
+  {ic:"🌶️",id:"chil",ru:"Перец чили",en:"Chili Pepper",cal:40,p:1.9,f:0.4,c:8.8,fib:1.5,pre:5,pro:false,boost:["bif","akk"],sup:["cdi","can"],sug:"simple"},
+  {ic:"🌿",id:"mint",ru:"Мята",en:"Mint",cal:70,p:3.8,f:0.9,c:15,fib:8,pre:5,pro:false,boost:["lac","bif"],sup:["cdi"],sug:"complex"},
+  {ic:"🫙",id:"cumi",ru:"Зира (кумин)",en:"Cumin",cal:375,p:18,f:22,c:44,fib:11,pre:6,pro:false,boost:["bif","lac"],sup:["cdi","eco"],sug:"complex"},
+
+  // — Mushrooms —
+  {ic:"🍄",id:"shii",ru:"Шиитаке",en:"Shiitake",cal:34,p:2.2,f:0.5,c:6.8,fib:2.5,pre:8,pro:false,boost:["bif","akk","fae"],sup:["cdi","can"],sug:"complex"},
+  {ic:"🍄",id:"oymsh",ru:"Вешенки",en:"Oyster Mushrooms",cal:33,p:3.3,f:0.4,c:6.1,fib:2.3,pre:7,pro:false,boost:["bif","fae"],sup:["cdi"],sug:"complex"},
+  {ic:"🍄",id:"chmp",ru:"Шампиньоны",en:"Button Mushrooms",cal:22,p:3.1,f:0.3,c:3.3,fib:1,pre:5,pro:false,boost:["bif","fae"],sup:[],sug:"complex"},
+  {ic:"🍄",id:"reis",ru:"Рейши",en:"Reishi",cal:59,p:7,f:1.8,c:75,fib:26,pre:9,pro:false,boost:["bif","akk","fae"],sup:["cdi","can","eco"],sug:"complex"},
+  {ic:"🍄",id:"chan",ru:"Лисички",en:"Chanterelles",cal:38,p:1.5,f:0.5,c:6.9,fib:3.8,pre:7,pro:false,boost:["bif","fae"],sup:[],sug:"complex"},
+  {ic:"🍄",id:"porc",ru:"Белые грибы",en:"Porcini",cal:27,p:3.7,f:0.5,c:3.3,fib:2.3,pre:7,pro:false,boost:["bif","fae","akk"],sup:["cdi"],sug:"complex"},
+  {ic:"🍄",id:"enok",ru:"Эноки",en:"Enoki",cal:37,p:2.7,f:0.3,c:7.6,fib:2.7,pre:7,pro:false,boost:["bif","fae"],sup:[],sug:"complex"},
+  {ic:"🍄",id:"cord",ru:"Кордицепс",en:"Cordyceps",cal:60,p:8,f:0.5,c:60,fib:8,pre:8,pro:false,boost:["akk","bif","fae"],sup:["cdi","can"],sug:"complex"},
+
+  // — Seafood —
+  {ic:"🐟",id:"mack",ru:"Скумбрия",en:"Mackerel",cal:205,p:19,f:14,c:0,fib:0,pre:0,pro:false,boost:["akk","fae"],sup:[],sug:"none"},
+  {ic:"🐟",id:"herr",ru:"Сельдь",en:"Herring",cal:158,p:17.7,f:9.7,c:0,fib:0,pre:0,pro:false,boost:["akk","fae"],sup:[],sug:"none"},
+  {ic:"🦪",id:"musl",ru:"Мидии",en:"Mussels",cal:86,p:12,f:2.2,c:3.7,fib:0,pre:1,pro:false,boost:["bac"],sup:[],sug:"none"},
+  {ic:"🦐",id:"shmp",ru:"Креветки",en:"Shrimp",cal:99,p:24,f:0.3,c:0.2,fib:0,pre:0,pro:false,boost:[],sup:[],sug:"none"},
+  {ic:"🦪",id:"oyst",ru:"Устрицы",en:"Oysters",cal:69,p:7,f:2.5,c:4.7,fib:0,pre:2,pro:false,boost:["bac","fae"],sup:[],sug:"none"},
+  {ic:"🦑",id:"squi",ru:"Кальмар",en:"Squid",cal:92,p:15.6,f:1.4,c:3.1,fib:0,pre:0,pro:false,boost:[],sup:[],sug:"none"},
+  {ic:"🐟",id:"anch",ru:"Анчоусы",en:"Anchovies",cal:131,p:20,f:4.8,c:0,fib:0,pre:0,pro:false,boost:["fae"],sup:[],sug:"none"},
+  {ic:"🐟",id:"trut",ru:"Форель",en:"Trout",cal:148,p:20.8,f:6.6,c:0,fib:0,pre:0,pro:false,boost:["akk","fae"],sup:[],sug:"none"},
+  {ic:"🐟",id:"codf",ru:"Треска",en:"Cod",cal:82,p:18,f:0.7,c:0,fib:0,pre:0,pro:false,boost:[],sup:[],sug:"none"},
+  {ic:"🐟",id:"sard",ru:"Сардины",en:"Sardines",cal:208,p:25,f:11.5,c:0,fib:0,pre:0,pro:false,boost:["akk","fae"],sup:[],sug:"none"},
+  {ic:"🦀",id:"crab",ru:"Краб",en:"Crab",cal:97,p:19,f:1.5,c:0,fib:0,pre:0,pro:false,boost:[],sup:[],sug:"none"},
+  {ic:"🌿",id:"nori",ru:"Водоросли нори",en:"Nori Seaweed",cal:35,p:5.8,f:0.3,c:5.1,fib:1.3,pre:6,pro:false,boost:["bif","akk","fae"],sup:["cdi"],sug:"none"},
+
+  // — More Fermented —
+  {ic:"🫘",id:"nato",ru:"Натто",en:"Natto",cal:211,p:17.7,f:11,c:14.4,fib:5.4,pre:7,pro:true,boost:["bif","lac","fae"],sup:["cdi","can"],sug:"complex"},
+  {ic:"🥛",id:"ryaz",ru:"Ряженка",en:"Ryazhenka",cal:54,p:2.8,f:2.5,c:4.6,fib:0,pre:4,pro:true,boost:["lac","bif"],sup:["cdi"],sug:"none"},
+  {ic:"🥛",id:"ayra",ru:"Айран",en:"Ayran",cal:22,p:1.4,f:1,c:2.3,fib:0,pre:3,pro:true,boost:["lac"],sup:[],sug:"none"},
+  {ic:"🥒",id:"pick",ru:"Маринованные огурцы",en:"Pickled Cucumbers",cal:11,p:0.6,f:0.1,c:2.3,fib:0.5,pre:3,pro:true,boost:["lac"],sup:[],sug:"none"},
+  {ic:"🍺",id:"kvas",ru:"Квас",en:"Kvass",cal:27,p:0.2,f:0,c:5.2,fib:0,pre:3,pro:true,boost:["lac","bif"],sup:[],sug:"simple"},
+  {ic:"🫙",id:"acvi",ru:"Яблочный уксус",en:"Apple Cider Vinegar",cal:22,p:0,f:0,c:0.9,fib:0,pre:2,pro:true,boost:["akk","lac"],sup:["cdi","can"],sug:"none"},
+  {ic:"🍜",id:"soyw",ru:"Соевый соус натуральный",en:"Natural Soy Sauce",cal:60,p:5.6,f:0,c:5.6,fib:0.8,pre:2,pro:false,boost:["bif"],sup:[],sug:"none"},
+  {ic:"⬜",id:"tofu",ru:"Тофу",en:"Tofu",cal:76,p:8,f:4.8,c:1.9,fib:0.3,pre:3,pro:false,boost:["bif","fae"],sup:[],sug:"none"},
+
+  // — More Vegetables —
+  {ic:"🥦",id:"cali",ru:"Цветная капуста",en:"Cauliflower",cal:25,p:1.9,f:0.3,c:5,fib:2,pre:5,pro:false,boost:["bif","fae"],sup:["cdi"],sug:"complex"},
+  {ic:"🥦",id:"brsp",ru:"Брюссельская капуста",en:"Brussels Sprouts",cal:43,p:3.4,f:0.3,c:8.9,fib:3.8,pre:7,pro:false,boost:["bif","lac","fae"],sup:["cdi"],sug:"complex"},
+  {ic:"🥬",id:"cele",ru:"Сельдерей",en:"Celery",cal:16,p:0.7,f:0.2,c:3,fib:1.6,pre:5,pro:false,boost:["bif","akk"],sup:[],sug:"complex"},
+  {ic:"🌱",id:"radi",ru:"Редис",en:"Radish",cal:16,p:0.7,f:0.1,c:3.4,fib:1.6,pre:4,pro:false,boost:["fae"],sup:[],sug:"simple"},
+  {ic:"🌽",id:"corn",ru:"Кукуруза",en:"Corn",cal:86,p:3.3,f:1.4,c:19,fib:2.7,pre:4,pro:false,boost:["bac","fae"],sup:[],sug:"simple"},
+  {ic:"🫘",id:"grbe",ru:"Стручковая фасоль",en:"Green Beans",cal:31,p:1.8,f:0.1,c:7,fib:2.7,pre:5,pro:false,boost:["bif","fae"],sup:[],sug:"complex"},
+  {ic:"🌿",id:"kelp",ru:"Ламинария",en:"Kelp (Seaweed)",cal:43,p:1.7,f:0.6,c:9.6,fib:1.3,pre:8,pro:false,boost:["bif","akk","fae"],sup:["cdi","can"],sug:"complex"},
+  {ic:"🥒",id:"zucc",ru:"Кабачок",en:"Zucchini",cal:17,p:1.2,f:0.3,c:3.1,fib:1,pre:3,pro:false,boost:["fae"],sup:[],sug:"simple"},
+  {ic:"🌱",id:"prsn",ru:"Пастернак",en:"Parsnip",cal:75,p:1.2,f:0.3,c:18,fib:4.9,pre:7,pro:false,boost:["bif","lac"],sup:[],sug:"complex"},
+  {ic:"🥬",id:"swch",ru:"Мангольд",en:"Swiss Chard",cal:19,p:1.8,f:0.2,c:3.7,fib:1.6,pre:5,pro:false,boost:["bif","fae"],sup:[],sug:"complex"},
+  {ic:"🥬",id:"bokc",ru:"Бок-чой",en:"Bok Choy",cal:13,p:1.5,f:0.2,c:2.2,fib:1,pre:5,pro:false,boost:["bif","fae"],sup:[],sug:"complex"},
+  {ic:"🟣",id:"turn",ru:"Репа",en:"Turnip",cal:28,p:0.9,f:0.1,c:6.4,fib:1.8,pre:5,pro:false,boost:["bif"],sup:[],sug:"complex"},
+
+  // — More Fruits —
+  {ic:"🫐",id:"figs",ru:"Инжир",en:"Figs",cal:74,p:0.75,f:0.3,c:19.2,fib:2.9,pre:6,pro:false,boost:["bif","fae"],sup:[],sug:"simple"},
+  {ic:"🟤",id:"date",ru:"Финики",en:"Dates",cal:282,p:2.5,f:0.4,c:75,fib:8,pre:6,pro:false,boost:["bif","lac"],sup:[],sug:"simple"},
+  {ic:"🌴",id:"papa",ru:"Папайя",en:"Papaya",cal:43,p:0.5,f:0.3,c:11,fib:1.7,pre:5,pro:false,boost:["bif","akk"],sup:[],sug:"simple"},
+  {ic:"🍉",id:"watr",ru:"Арбуз",en:"Watermelon",cal:30,p:0.6,f:0.2,c:7.6,fib:0.4,pre:2,pro:false,boost:[],sup:[],sug:"simple"},
+  {ic:"🍑",id:"plum",ru:"Слива",en:"Plum",cal:46,p:0.7,f:0.3,c:11.4,fib:1.4,pre:5,pro:false,boost:["bif","fae"],sup:[],sug:"simple"},
+  {ic:"🍒",id:"cher",ru:"Вишня",en:"Cherry",cal:50,p:1,f:0.3,c:12,fib:1.6,pre:5,pro:false,boost:["akk","bif"],sup:[],sug:"simple"},
+  {ic:"🍑",id:"apri",ru:"Абрикос",en:"Apricot",cal:48,p:1.4,f:0.4,c:11,fib:2,pre:5,pro:false,boost:["bif","fae"],sup:[],sug:"simple"},
+  {ic:"🍇",id:"grap",ru:"Виноград",en:"Grapes",cal:69,p:0.7,f:0.2,c:18,fib:0.9,pre:3,pro:false,boost:["akk"],sup:[],sug:"simple"},
+  {ic:"🍋",id:"lemo",ru:"Лимон",en:"Lemon",cal:29,p:1.1,f:0.3,c:9.3,fib:2.8,pre:5,pro:false,boost:["akk","lac"],sup:["cdi","can"],sug:"simple"},
+  {ic:"🍍",id:"pine",ru:"Ананас",en:"Pineapple",cal:50,p:0.5,f:0.1,c:13.1,fib:1.4,pre:4,pro:false,boost:["bif","bac"],sup:[],sug:"simple"},
+  {ic:"🥥",id:"coco",ru:"Кокос",en:"Coconut",cal:354,p:3.3,f:33.5,c:15.2,fib:9,pre:5,pro:false,boost:["bif","fae"],sup:["can"],sug:"simple"},
+  {ic:"🍈",id:"melo",ru:"Дыня",en:"Melon",cal:34,p:0.8,f:0.2,c:8.2,fib:0.9,pre:2,pro:false,boost:[],sup:[],sug:"simple"},
+
+  // — More Grains —
+  {ic:"🌾",id:"mill",ru:"Пшено",en:"Millet",cal:378,p:11,f:4.2,c:73,fib:8.5,pre:6,pro:false,boost:["bif","fae"],sup:[],sug:"complex"},
+  {ic:"🌾",id:"amar",ru:"Амарант",en:"Amaranth",cal:371,p:13.6,f:7,c:65,fib:6.7,pre:6,pro:false,boost:["bif","fae","lac"],sup:[],sug:"complex"},
+  {ic:"🌾",id:"spel",ru:"Спельта",en:"Spelt",cal:338,p:14.6,f:2.4,c:70,fib:10.7,pre:8,pro:false,boost:["bif","lac","fae"],sup:["cdi"],sug:"complex"},
+  {ic:"🌾",id:"teff",ru:"Тефф",en:"Teff",cal:367,p:13.3,f:2.4,c:73,fib:8,pre:7,pro:false,boost:["bif","fae"],sup:[],sug:"complex"},
+  {ic:"🌾",id:"wbra",ru:"Пшеничные отруби",en:"Wheat Bran",cal:216,p:15.5,f:4.3,c:64.5,fib:42.8,pre:10,pro:false,boost:["bif","lac","fae","akk"],sup:["cdi"],sug:"complex"},
+  {ic:"🌽",id:"crmm",ru:"Кукурузная крупа",en:"Cornmeal",cal:362,p:8.2,f:3.6,c:74,fib:7.3,pre:4,pro:false,boost:["bac"],sup:[],sug:"complex"},
+  {ic:"🌾",id:"pbar",ru:"Перловка",en:"Pearl Barley",cal:123,p:2.3,f:0.4,c:28,fib:3.8,pre:8,pro:false,boost:["bif","lac","fae"],sup:["cdi"],sug:"complex"},
+  {ic:"🍚",id:"wild",ru:"Дикий рис",en:"Wild Rice",cal:101,p:4,f:0.3,c:21,fib:1.8,pre:4,pro:false,boost:["bac","fae"],sup:[],sug:"complex"},
+
+  // — More Nuts & Seeds —
+  {ic:"🥜",id:"cash",ru:"Кешью",en:"Cashews",cal:553,p:18.2,f:43.9,c:30.2,fib:3.3,pre:3,pro:false,boost:["fae"],sup:[],sug:"none"},
+  {ic:"🟢",id:"pist",ru:"Фисташки",en:"Pistachios",cal:562,p:20.3,f:45.4,c:27.5,fib:10.3,pre:6,pro:false,boost:["bif","lac","fae"],sup:[],sug:"none"},
+  {ic:"🟤",id:"psee",ru:"Тыквенные семечки",en:"Pumpkin Seeds",cal:559,p:30,f:49,c:10.7,fib:6,pre:6,pro:false,boost:["fae","bif"],sup:["can"],sug:"none"},
+  {ic:"⚪",id:"sesa",ru:"Кунжут",en:"Sesame Seeds",cal:573,p:17.7,f:49.7,c:23.4,fib:11.8,pre:6,pro:false,boost:["bif","lac","fae"],sup:[],sug:"none"},
+  {ic:"🥜",id:"pean",ru:"Арахис",en:"Peanuts",cal:567,p:25.8,f:49.2,c:16.1,fib:8.5,pre:5,pro:false,boost:["bif","fae"],sup:[],sug:"none"},
+  {ic:"🌰",id:"braz",ru:"Бразильский орех",en:"Brazil Nuts",cal:659,p:14.3,f:67.1,c:12.3,fib:7.5,pre:5,pro:false,boost:["akk","fae"],sup:[],sug:"none"},
+  {ic:"🌿",id:"hemp",ru:"Конопляные семена",en:"Hemp Seeds",cal:553,p:31.6,f:48.8,c:8.7,fib:4,pre:5,pro:false,boost:["fae","akk"],sup:[],sug:"none"},
+  {ic:"🌰",id:"cedr",ru:"Кедровый орех",en:"Pine Nuts",cal:673,p:13.7,f:68.4,c:13.1,fib:3.7,pre:4,pro:false,boost:["fae"],sup:[],sug:"none"},
+
+  // — More Dairy —
+  {ic:"🥛",id:"scre",ru:"Сметана",en:"Sour Cream",cal:198,p:2.5,f:20,c:3.7,fib:0,pre:1,pro:false,boost:[],sup:[],sug:"none"},
+  {ic:"🍶",id:"gryg",ru:"Греческий йогурт",en:"Greek Yogurt",cal:97,p:9,f:5,c:3.6,fib:0,pre:5,pro:true,boost:["lac","bif"],sup:["cdi","can"],sug:"none"},
+  {ic:"🧀",id:"parm",ru:"Пармезан",en:"Parmesan",cal:431,p:38,f:29,c:3.2,fib:0,pre:0,pro:false,boost:[],sup:[],sug:"none"},
+  {ic:"🧀",id:"rico",ru:"Рикотта",en:"Ricotta",cal:174,p:11.3,f:13,c:3,fib:0,pre:1,pro:false,boost:["lac"],sup:[],sug:"none"},
+  {ic:"🧈",id:"butr",ru:"Масло сливочное",en:"Butter",cal:717,p:0.9,f:81,c:0.1,fib:0,pre:0,pro:false,boost:[],sup:["bif","fae"],sug:"none"},
+  {ic:"🥛",id:"crea",ru:"Сливки 35%",en:"Heavy Cream",cal:337,p:2.5,f:35,c:3,fib:0,pre:0,pro:false,boost:[],sup:[],sug:"none"},
+
+  // — More Oils & Drinks —
+  {ic:"🥥",id:"coil",ru:"Кокосовое масло",en:"Coconut Oil",cal:892,p:0,f:99,c:0,fib:0,pre:1,pro:false,boost:[],sup:["cdi","eco"],sug:"none"},
+  {ic:"🌱",id:"floi",ru:"Льняное масло",en:"Flaxseed Oil",cal:884,p:0,f:100,c:0,fib:0,pre:2,pro:false,boost:["bif","fae","akk"],sup:[],sug:"none"},
+  {ic:"🍵",id:"gite",ru:"Имбирный чай",en:"Ginger Tea",cal:5,p:0,f:0,c:1.2,fib:0.1,pre:3,pro:false,boost:["akk","lac"],sup:["cdi","eco"],sug:"none"},
+  {ic:"🌸",id:"romt",ru:"Ромашковый чай",en:"Chamomile Tea",cal:1,p:0,f:0,c:0.2,fib:0,pre:2,pro:false,boost:["bif","lac"],sup:["cdi"],sug:"none"},
+  {ic:"🍫",id:"caca",ru:"Какао (порошок)",en:"Cocoa Powder",cal:228,p:19.6,f:13.7,c:57.9,fib:33.2,pre:7,pro:false,boost:["akk","bif","fae"],sup:[],sug:"complex"},
+  {ic:"🥥",id:"cwat",ru:"Кокосовая вода",en:"Coconut Water",cal:19,p:0.7,f:0.2,c:3.7,fib:1.1,pre:3,pro:false,boost:["lac"],sup:[],sug:"simple"},
+  {ic:"☕",id:"chcy",ru:"Цикорий",en:"Chicory Drink",cal:18,p:0.4,f:0.2,c:4.3,fib:0.4,pre:9,pro:false,boost:["bif","lac"],sup:["cdi"],sug:"complex"},
+
+  // — More Unhealthy —
+  {ic:"🍦",id:"icec",ru:"Мороженое",en:"Ice Cream",cal:207,p:3.5,f:11,c:23.6,fib:0,pre:0,pro:false,boost:["can","cdi"],sup:["bif","lac","fae"],sug:"simple"},
+  {ic:"🍩",id:"donu",ru:"Пончики",en:"Donuts",cal:452,p:7.5,f:25,c:51.3,fib:1.7,pre:0,pro:false,boost:["cdi","can"],sup:["bif","lac","fae","akk"],sug:"simple"},
+  {ic:"🍪",id:"cook",ru:"Печенье",en:"Cookies",cal:502,p:5.9,f:25,c:65.5,fib:2.3,pre:0,pro:false,boost:["cdi","can"],sup:["bif","lac","fae"],sug:"simple"},
+  {ic:"🫙",id:"mayo",ru:"Майонез",en:"Mayonnaise",cal:680,p:1.3,f:74.9,c:1.5,fib:0,pre:0,pro:false,boost:["cdi"],sup:["bif","fae"],sug:"none"},
+  {ic:"🌭",id:"saus",ru:"Колбаса варёная",en:"Boiled Sausage",cal:257,p:13.7,f:22.8,c:1.5,fib:0,pre:0,pro:false,boost:["cdi","eco"],sup:["bif","lac","fae"],sug:"none"},
+  {ic:"🍟",id:"corc",ru:"Картофель фри",en:"French Fries",cal:312,p:3.4,f:15.5,c:41.4,fib:3.8,pre:0,pro:false,boost:["cdi"],sup:["bif","fae"],sug:"complex"},
+  {ic:"🥐",id:"bake",ru:"Сладкая выпечка",en:"Sweet Pastry",cal:384,p:6,f:12,c:63,fib:1.3,pre:0,pro:false,boost:["cdi","can"],sup:["bif","lac","fae","akk"],sug:"simple"},
+  {ic:"🌭",id:"hdog",ru:"Сосиски",en:"Hot Dog Sausages",cal:296,p:12.4,f:26.3,c:2.4,fib:0,pre:0,pro:false,boost:["cdi","eco"],sup:["bif","fae"],sug:"none"},
 ];
 
 // ============================================================
