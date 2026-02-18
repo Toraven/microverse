@@ -601,8 +601,8 @@ function MicrobiomeViz({mb,lang}){
           </radialGradient>
         ))}
         <radialGradient id="gut-fill" cx="50%" cy="50%" r="50%">
-          <stop offset="0%" stopColor="#e8f5f1" stopOpacity="1"/>
-          <stop offset="100%" stopColor="#d4ede6" stopOpacity="1"/>
+          <stop offset="0%" stopColor="#0d2340" stopOpacity="1"/>
+          <stop offset="100%" stopColor="#060f1e" stopOpacity="1"/>
         </radialGradient>
         <filter id="glow-f" x="-30%" y="-30%" width="160%" height="160%">
           <feGaussianBlur stdDeviation="2.5" result="b"/>
@@ -696,20 +696,20 @@ function HealthRing({score,t}){
           style={{filter:`drop-shadow(0 0 10px ${col})`}}>
           {score}
         </text>
-        <text x={65} y={76} textAnchor="middle" fill="rgba(204,214,246,0.5)" fontSize="9"
+        <text x={65} y={76} textAnchor="middle" fill="rgba(30,41,59,0.5)" fontSize="9"
           fontFamily="'DM Sans',sans-serif">
           /100
         </text>
       </svg>
       <div>
-        <div style={{fontSize:11,color:"rgba(204,214,246,0.45)",fontFamily:"'Space Mono',monospace",letterSpacing:"0.08em",marginBottom:4}}>
+        <div style={{fontSize:11,color:"rgba(30,41,59,0.55)",fontFamily:"'Space Mono',monospace",letterSpacing:"0.08em",marginBottom:4}}>
           {t.score.toUpperCase()}
         </div>
         <div style={{fontSize:20,fontWeight:700,color:col,lineHeight:1,
           textShadow:`0 0 20px ${col}`}}>
           {lbl}
         </div>
-        <div style={{fontSize:11,color:"rgba(204,214,246,0.4)",marginTop:6}}>
+        <div style={{fontSize:11,color:"rgba(30,41,59,0.5)",marginTop:6}}>
           {score>=76?t.gut_healthy:score>=56?t.gut_ok:score>=36?t.gut_warn:t.gut_bad}
         </div>
       </div>
@@ -905,7 +905,7 @@ function NutritionSummary({n,t}){
           border:`1px solid rgba(${hexToRgb(color)},0.18)`,
           borderRadius:8,padding:"10px 12px",
         }}>
-          <div style={{fontSize:10,color:"rgba(204,214,246,0.45)",textTransform:"uppercase",
+          <div style={{fontSize:10,color:"rgba(30,41,59,0.55)",textTransform:"uppercase",
             letterSpacing:"0.06em",marginBottom:3,fontFamily:"'Space Mono',monospace"}}>
             {label}
           </div>
@@ -913,7 +913,7 @@ function NutritionSummary({n,t}){
             textShadow:`0 0 12px rgba(${hexToRgb(color)},0.4)`}}>
             {val}
           </div>
-          <div style={{fontSize:10,color:"rgba(204,214,246,0.3)",marginTop:1}}>{unit}</div>
+          <div style={{fontSize:10,color:"rgba(30,41,59,0.4)",marginTop:1}}>{unit}</div>
         </div>
       ))}
     </div>
@@ -947,7 +947,7 @@ function BacteriaPanel({mb,t,lang,baseline}){
           </div>
           <div style={{display:"flex",alignItems:"center",gap:6}}>
             {diff!==0&&(
-              <span style={{fontSize:10,color:diff>0?b.role==="bad"?"#f87171":"#64ffda":"rgba(204,214,246,0.3)",fontFamily:"'Space Mono',monospace"}}>
+              <span style={{fontSize:10,color:diff>0?b.role==="bad"?"#f87171":"#64ffda":"rgba(30,41,59,0.4)",fontFamily:"'Space Mono',monospace"}}>
                 {diff>0?"+":""}{Math.round(diff)}
               </span>
             )}
@@ -957,7 +957,7 @@ function BacteriaPanel({mb,t,lang,baseline}){
             </span>
           </div>
         </div>
-        <div style={{height:5,background:"rgba(255,255,255,0.05)",borderRadius:3,overflow:"hidden"}}>
+        <div style={{height:5,background:"rgba(13,148,136,0.1)",borderRadius:3,overflow:"hidden"}}>
           <div style={{
             height:"100%",borderRadius:3,
             width:`${sc}%`,
@@ -1004,7 +1004,7 @@ function PrebioticRow({log,t}){
     <div style={{display:"flex",gap:10}}>
       <div style={{flex:1,background:"rgba(13,148,136,0.05)",border:"1px solid rgba(13,148,136,0.12)",
         borderRadius:8,padding:"10px 12px"}}>
-        <div style={{fontSize:10,color:"rgba(204,214,246,0.4)",textTransform:"uppercase",
+        <div style={{fontSize:10,color:"rgba(30,41,59,0.5)",textTransform:"uppercase",
           letterSpacing:"0.06em",marginBottom:4,fontFamily:"'Space Mono',monospace"}}>
           {t.preScore}
         </div>
@@ -1013,21 +1013,21 @@ function PrebioticRow({log,t}){
             textShadow:`0 0 12px rgba(${hexToRgb(col)},0.5)`}}>
             {preAvg.toFixed(1)}
           </div>
-          <div style={{height:6,flex:1,background:"rgba(255,255,255,0.06)",borderRadius:3,overflow:"hidden"}}>
+          <div style={{height:6,flex:1,background:"rgba(13,148,136,0.1)",borderRadius:3,overflow:"hidden"}}>
             <div style={{height:"100%",width:`${preAvg*10}%`,borderRadius:3,
               background:`linear-gradient(90deg,${col}aa,${col})`,
               transition:"width 0.7s ease"}}/>
           </div>
-          <div style={{fontSize:10,color:"rgba(204,214,246,0.3)",fontFamily:"'Space Mono',monospace"}}>/10</div>
+          <div style={{fontSize:10,color:"rgba(30,41,59,0.4)",fontFamily:"'Space Mono',monospace"}}>/10</div>
         </div>
       </div>
       <div style={{flex:1,background:"rgba(0,212,255,0.04)",border:`1px solid rgba(0,212,255,${hasProb?0.25:0.1})`,
         borderRadius:8,padding:"10px 12px"}}>
-        <div style={{fontSize:10,color:"rgba(204,214,246,0.4)",textTransform:"uppercase",
+        <div style={{fontSize:10,color:"rgba(30,41,59,0.5)",textTransform:"uppercase",
           letterSpacing:"0.06em",marginBottom:4,fontFamily:"'Space Mono',monospace"}}>
           {t.probIn}
         </div>
-        <div style={{fontSize:14,fontWeight:600,color:hasProb?"#00d4ff":"rgba(204,214,246,0.3)"}}>
+        <div style={{fontSize:14,fontWeight:600,color:hasProb?"#00d4ff":"rgba(30,41,59,0.4)"}}>
           {hasProb?t.yes:t.no}
         </div>
       </div>
@@ -1159,7 +1159,7 @@ function DiaryTab({t,lang,baseline}){
         {allLog.length>0&&(
           <div style={{display:"flex",alignItems:"center",gap:10,padding:"8px 16px",
             background:"rgba(13,148,136,0.06)",border:"1px solid rgba(13,148,136,0.18)",borderRadius:10}}>
-            <span style={{fontSize:11,color:"rgba(204,214,246,0.5)",textTransform:"uppercase",
+            <span style={{fontSize:11,color:"rgba(30,41,59,0.5)",textTransform:"uppercase",
               letterSpacing:"0.06em",fontFamily:"'Space Mono',monospace"}}>{t.dayScore}</span>
             <span style={{fontSize:22,fontWeight:700,color:scoreColor(hs),fontFamily:"'Space Mono',monospace",
               textShadow:`0 0 12px ${scoreColor(hs)}`}}>{hs}</span>
@@ -1242,7 +1242,7 @@ function DiaryTab({t,lang,baseline}){
                   <div key={i} style={{display:"flex",alignItems:"center",gap:12}}>
                     <div style={{width:70,fontSize:11,color:meals[i].length?col:"#94a3b8",
                       fontWeight:meals[i].length?600:400}}>{m}</div>
-                    <div style={{flex:1,height:8,background:"rgba(255,255,255,0.06)",borderRadius:4,overflow:"hidden"}}>
+                    <div style={{flex:1,height:8,background:"rgba(13,148,136,0.1)",borderRadius:4,overflow:"hidden"}}>
                       <div style={{height:"100%",width:`${sc}%`,borderRadius:4,
                         background:`linear-gradient(90deg,${col}88,${col})`,
                         transition:"width .8s ease",
@@ -1328,7 +1328,7 @@ function RecommendationsTab({log,mb,t,lang,baseline}){
     <div style={{animation:"fadeUp .4s ease",maxWidth:960,margin:"0 auto"}}>
       {/* Overview */}
       <div className="mv-card" style={{marginBottom:20,
-        background:`linear-gradient(135deg, rgba(${hexToRgb(scoreCol)},0.08), rgba(10,22,40,0.8))`,
+        background:`linear-gradient(135deg, rgba(${hexToRgb(scoreCol)},0.08), rgba(255,255,255,0.95))`,
         border:`1px solid rgba(${hexToRgb(scoreCol)},0.2)`}}>
         <div style={{display:"flex",alignItems:"center",gap:20,flexWrap:"wrap"}}>
           <HealthRing score={hs} t={t}/>
@@ -1378,7 +1378,7 @@ function RecommendationsTab({log,mb,t,lang,baseline}){
                       <div style={{fontSize:18,fontWeight:700,color:"#f87171",fontFamily:"'Space Mono',monospace"}}>
                         {Math.round(sc)}
                       </div>
-                      <div style={{fontSize:10,color:"rgba(204,214,246,0.3)"}}>
+                      <div style={{fontSize:10,color:"rgba(30,41,59,0.4)"}}>
                         −{Math.round(delta)} {lang==="ru"?"от нормы":"below norm"}
                       </div>
                     </div>
@@ -1451,7 +1451,7 @@ function RecommendationsTab({log,mb,t,lang,baseline}){
                       <div style={{fontSize:18,fontWeight:700,color:b.color,fontFamily:"'Space Mono',monospace"}}>
                         {Math.round(sc)}
                       </div>
-                      <div style={{fontSize:10,color:"rgba(204,214,246,0.3)"}}>
+                      <div style={{fontSize:10,color:"rgba(30,41,59,0.4)"}}>
                         +{Math.round(delta)} {lang==="ru"?"выше нормы":"above norm"}
                       </div>
                     </div>
@@ -1593,9 +1593,9 @@ function SymptomsTab({t,lang}){
                 borderRadius:10,fontFamily:"'DM Sans',sans-serif",
                 fontSize:13,fontWeight:500,transition:"all .2s",
                 display:"flex",alignItems:"center",gap:8,
-                background:on?"rgba(13,148,136,0.12)":"rgba(10,22,40,0.8)",
-                border:`1px solid ${on?"rgba(13,148,136,0.7)":"rgba(13,148,136,0.12)"}`,
-                color:on?"#64ffda":"#475569",
+                background:on?"rgba(13,148,136,0.1)":"#ffffff",
+                border:`1px solid ${on?"rgba(13,148,136,0.5)":"rgba(13,148,136,0.15)"}`,
+                color:on?"#0d9488":"#334155",
                 boxShadow:on?"0 0 12px rgba(13,148,136,0.12)":"none",
               }}>
               <span style={{fontSize:16}}>{s.ic}</span>
@@ -1842,7 +1842,7 @@ export default function App(){
         {/* Age input */}
         <div style={{display:"flex",alignItems:"center",gap:6,flexShrink:0}}>
           <label style={{
-            fontSize:10,color:"rgba(204,214,246,0.45)",
+            fontSize:10,color:"rgba(30,41,59,0.55)",
             fontFamily:"'Space Mono',monospace",letterSpacing:"0.06em",
             textTransform:"uppercase",whiteSpace:"nowrap",
           }}>
