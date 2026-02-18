@@ -234,6 +234,23 @@ const BACTERIA = [
 const BM = Object.fromEntries(BACTERIA.map(b=>[b.id,b]));
 const BASELINE = {bif:65,lac:62,akk:52,fae:58,bac:50,cdi:10,eco:8,can:6};
 
+const BASELINES_BY_AGE = {
+  child:  {bif:80,lac:70,akk:45,fae:50,bac:45,cdi:8, eco:6, can:5},
+  teen:   {bif:72,lac:65,akk:48,fae:54,bac:48,cdi:10,eco:8, can:7},
+  young:  {bif:65,lac:62,akk:52,fae:58,bac:50,cdi:10,eco:8, can:6},
+  middle: {bif:58,lac:55,akk:48,fae:52,bac:52,cdi:13,eco:10,can:8},
+  older:  {bif:50,lac:48,akk:42,fae:45,bac:55,cdi:17,eco:13,can:11},
+};
+
+function getBaselineByAge(age){
+  const a=Number(age)||30;
+  if(a<=12) return BASELINES_BY_AGE.child;
+  if(a<=17) return BASELINES_BY_AGE.teen;
+  if(a<=35) return BASELINES_BY_AGE.young;
+  if(a<=55) return BASELINES_BY_AGE.middle;
+  return BASELINES_BY_AGE.older;
+}
+
 // ============================================================
 // TRANSLATIONS
 // ============================================================
@@ -271,6 +288,7 @@ const T = {
     gut_ok:"Микробиом в норме",
     gut_warn:"Требует внимания",
     gut_bad:"Дисбаланс микробиома",
+    age:"Возраст",
   },
   en:{
     title:"MicroVerse", sub:"GUT & FOOD LAB",
@@ -305,6 +323,7 @@ const T = {
     gut_ok:"Microbiome in balance",
     gut_warn:"Needs attention",
     gut_bad:"Microbiome imbalance",
+    age:"Age",
   }
 };
 
@@ -319,8 +338,8 @@ function calcNutrition(log){
   },{cal:0,prot:0,fat:0,carb:0,fib:0});
 }
 
-function calcMicrobiome(log){
-  let s={...BASELINE};
+function calcMicrobiome(log, baseline=BASELINES_BY_AGE.young){
+  let s={...baseline};
   log.forEach(({food:f,amount:amt})=>{
     const sc=amt/100;
     f.boost.forEach(id=>{
@@ -711,14 +730,14 @@ function hexToRgb(hex){
 // ============================================================
 // BACTERIA PANEL
 // ============================================================
-function BacteriaPanel({mb,t,lang}){
+function BacteriaPanel({mb,t,lang,baseline}){
   const good=BACTERIA.filter(b=>b.role==="good");
   const bad=BACTERIA.filter(b=>b.role==="bad");
   const neutral=BACTERIA.filter(b=>b.role==="neutral");
 
   const Row=({b})=>{
     const sc=mb[b.id]??0;
-    const base=BASELINE[b.id];
+    const base=(baseline??BASELINES_BY_AGE.young)[b.id];
     const diff=sc-base;
     const name=lang==="ru"?b.ru:b.en;
     return(
@@ -821,7 +840,7 @@ function PrebioticRow({log,t}){
 // ============================================================
 // CALCULATOR TAB
 // ============================================================
-function CalculatorTab({log,mb,setLog,t,lang}){
+function CalculatorTab({log,mb,setLog,t,lang,baseline}){
   const n=useMemo(()=>calcNutrition(log),[log]);
   const hs=useMemo(()=>healthScore(mb),[mb]);
 
@@ -896,7 +915,7 @@ function CalculatorTab({log,mb,setLog,t,lang}){
             letterSpacing:"0.08em",textTransform:"uppercase",marginBottom:10}}>
             {t.bacteriaTitle}
           </div>
-          <BacteriaPanel mb={mb} t={t} lang={lang}/>
+          <BacteriaPanel mb={mb} t={t} lang={lang} baseline={baseline}/>
         </div>
       </div>
     </div>
@@ -906,7 +925,7 @@ function CalculatorTab({log,mb,setLog,t,lang}){
 // ============================================================
 // DIARY TAB
 // ============================================================
-function DiaryTab({t,lang}){
+function DiaryTab({t,lang,baseline}){
   const [meals,setMeals]=useState({0:[],1:[],2:[],3:[]});
   const [activeMeal,setActiveMeal]=useState(0);
   const mealColors=["#fbbf24","#00d4ff","#a78bfa","#34d399"];
@@ -919,16 +938,16 @@ function DiaryTab({t,lang}){
   };
 
   const allLog=Object.values(meals).flat();
-  const totalMb=useMemo(()=>calcMicrobiome(allLog),[allLog]);
+  const totalMb=useMemo(()=>calcMicrobiome(allLog,baseline),[allLog,baseline]);
   const hs=useMemo(()=>healthScore(totalMb),[totalMb]);
 
   // Running state per meal
   const running=useMemo(()=>{
     const states=[];
     let acc=[];
-    for(let i=0;i<4;i++){acc=[...acc,...meals[i]];states.push(healthScore(calcMicrobiome(acc)));}
+    for(let i=0;i<4;i++){acc=[...acc,...meals[i]];states.push(healthScore(calcMicrobiome(acc,baseline)));}
     return states;
-  },[meals]);
+  },[meals,baseline]);
 
   const name=f=>f[lang==="ru"?"ru":"en"];
 
@@ -1053,7 +1072,7 @@ function DiaryTab({t,lang}){
                   letterSpacing:"0.08em",textTransform:"uppercase",marginBottom:10}}>
                   {t.bacteriaTitle}
                 </div>
-                <BacteriaPanel mb={totalMb} t={t} lang={lang}/>
+                <BacteriaPanel mb={totalMb} t={t} lang={lang} baseline={baseline}/>
               </div>
             </>
           )}
@@ -1066,7 +1085,7 @@ function DiaryTab({t,lang}){
 // ============================================================
 // RECOMMENDATIONS TAB
 // ============================================================
-function RecommendationsTab({log,mb,t,lang}){
+function RecommendationsTab({log,mb,t,lang,baseline}){
   const hs=healthScore(mb);
 
   // Analyze deficiencies & excesses
@@ -1076,7 +1095,7 @@ function RecommendationsTab({log,mb,t,lang}){
 
     BACTERIA.forEach(b=>{
       const sc=mb[b.id]??0;
-      const base=BASELINE[b.id];
+      const base=(baseline??BASELINES_BY_AGE.young)[b.id];
       if(b.role==="good"&&sc<base-8){
         // find top foods that boost this bacteria
         const topFoods=FOODS.filter(f=>f.boost.includes(b.id))
@@ -1093,7 +1112,7 @@ function RecommendationsTab({log,mb,t,lang}){
     deficient.sort((a,b2)=>b2.delta-a.delta);
     excess.sort((a,b2)=>b2.delta-a.delta);
     return{deficient,excess};
-  },[mb]);
+  },[mb,baseline]);
 
   const name=f=>f[lang==="ru"?"ru":"en"];
 
@@ -1342,9 +1361,11 @@ export default function App(){
   const [lang,setLang]=useState("ru");
   const [tab,setTab]=useState(0);
   const [calcLog,setCalcLog]=useState([]);
+  const [age,setAge]=useState(30);
 
   const t=T[lang];
-  const mb=useMemo(()=>calcMicrobiome(calcLog),[calcLog]);
+  const baseline=useMemo(()=>getBaselineByAge(age),[age]);
+  const mb=useMemo(()=>calcMicrobiome(calcLog,baseline),[calcLog,baseline]);
 
   return(
     <div style={{
@@ -1396,6 +1417,29 @@ export default function App(){
           ))}
         </div>
 
+        {/* Age input */}
+        <div style={{display:"flex",alignItems:"center",gap:6,flexShrink:0}}>
+          <label style={{
+            fontSize:10,color:"rgba(204,214,246,0.45)",
+            fontFamily:"'Space Mono',monospace",letterSpacing:"0.06em",
+            textTransform:"uppercase",whiteSpace:"nowrap",
+          }}>
+            {t.age}
+          </label>
+          <input
+            type="number" min={1} max={100} value={age}
+            onChange={e=>setAge(Math.max(1,Math.min(100,Number(e.target.value)||30)))}
+            style={{
+              width:52,padding:"4px 8px",textAlign:"center",
+              background:"rgba(15,32,64,0.8)",
+              border:"1px solid rgba(100,255,218,0.15)",
+              borderRadius:6,color:"#ccd6f6",
+              fontFamily:"'Space Mono',monospace",fontSize:12,
+              outline:"none",
+            }}
+          />
+        </div>
+
         {/* Lang switcher */}
         <div style={{display:"flex",gap:4,flexShrink:0}}>
           {["ru","en"].map(l=>(
@@ -1417,9 +1461,9 @@ export default function App(){
 
       {/* ── MAIN ── */}
       <main style={{maxWidth:1240,margin:"0 auto",padding:"24px 16px",position:"relative",zIndex:1}}>
-        {tab===0&&<CalculatorTab log={calcLog} mb={mb} setLog={setCalcLog} t={t} lang={lang}/>}
-        {tab===1&&<DiaryTab t={t} lang={lang}/>}
-        {tab===2&&<RecommendationsTab log={calcLog} mb={mb} t={t} lang={lang}/>}
+        {tab===0&&<CalculatorTab log={calcLog} mb={mb} setLog={setCalcLog} t={t} lang={lang} baseline={baseline}/>}
+        {tab===1&&<DiaryTab t={t} lang={lang} baseline={baseline}/>}
+        {tab===2&&<RecommendationsTab log={calcLog} mb={mb} t={t} lang={lang} baseline={baseline}/>}
       </main>
 
       {/* ── FOOTER ── */}
