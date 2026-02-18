@@ -357,6 +357,61 @@ const BACTERIA = [
 const BM = Object.fromEntries(BACTERIA.map(b=>[b.id,b]));
 const BASELINE = {bif:65,lac:62,akk:52,fae:58,bac:50,cdi:10,eco:8,can:6};
 
+// ============================================================
+// SYMPTOMS DATABASE
+// low: bacteria likely deficient | high: bacteria likely excess
+// ============================================================
+const SYMPTOMS = [
+  {id:"bloat",ic:"🫧",ru:"Вздутие живота",en:"Bloating",
+   low:["fae","lac"],high:["cdi"],
+   tip_ru:"Нарушен баланс бактерий ферментации. Добавьте пробиотики и умеренную клетчатку.",
+   tip_en:"Fermentation bacteria imbalance. Add probiotics and moderate fiber."},
+  {id:"const",ic:"🪨",ru:"Запор",en:"Constipation",
+   low:["bif","fae"],high:[],
+   tip_ru:"Недостаток клетчатки и полезных бактерий. Увеличьте потребление клетчатки и воды.",
+   tip_en:"Lack of fiber and beneficial bacteria. Increase fiber and water intake."},
+  {id:"diarr",ic:"⚡",ru:"Диарея",en:"Diarrhea",
+   low:["lac","bif"],high:["cdi","eco"],
+   tip_ru:"Патогены преобладают. Пробиотики и продукты с антибактериальными свойствами.",
+   tip_en:"Pathogens dominate. Probiotics and foods with antibacterial properties."},
+  {id:"fatg",ic:"😴",ru:"Хроническая усталость",en:"Chronic Fatigue",
+   low:["bif","fae"],high:[],
+   tip_ru:"Микробиом влияет на синтез нейромедиаторов и энергетический обмен.",
+   tip_en:"Microbiome affects neurotransmitter synthesis and energy metabolism."},
+  {id:"skin",ic:"🧴",ru:"Проблемы с кожей",en:"Skin Issues",
+   low:["akk","bif"],high:["can"],
+   tip_ru:"Нарушение барьерной функции кишечника связано с кожными воспалениями.",
+   tip_en:"Gut barrier dysfunction is linked to skin inflammation."},
+  {id:"immu",ic:"🛡️",ru:"Слабый иммунитет",en:"Weak Immunity",
+   low:["bif","akk","lac"],high:[],
+   tip_ru:"80% иммунитета в кишечнике. Разнообразьте микрофлору пребиотиками.",
+   tip_en:"80% of immunity is in the gut. Diversify microflora with prebiotics."},
+  {id:"sugc",ic:"🍬",ru:"Тяга к сладкому",en:"Sugar Cravings",
+   low:["lac","bif"],high:["can"],
+   tip_ru:"Кандида и дефицит лактобактерий усиливают тягу к сахару.",
+   tip_en:"Candida and lactobacilli deficiency increase sugar cravings."},
+  {id:"weig",ic:"⚖️",ru:"Проблемы с весом",en:"Weight Issues",
+   low:["akk"],high:["bac"],
+   tip_ru:"Аккермансия — ключ к метаболизму. Полифенолы и омега-3 её поддерживают.",
+   tip_en:"Akkermansia is key for metabolism. Polyphenols and omega-3 support it."},
+  {id:"anxi",ic:"😰",ru:"Тревожность",en:"Anxiety & Stress",
+   low:["lac","bif"],high:[],
+   tip_ru:"Ось кишечник–мозг: лактобактерии участвуют в синтезе ГАМК и серотонина.",
+   tip_en:"Gut-brain axis: lactobacilli participate in GABA and serotonin synthesis."},
+  {id:"slep",ic:"🌙",ru:"Плохой сон",en:"Poor Sleep",
+   low:["bif","fae"],high:[],
+   tip_ru:"Микробиом регулирует синтез серотонина — предшественника мелатонина.",
+   tip_en:"Microbiome regulates serotonin synthesis — melatonin precursor."},
+  {id:"hbrn",ic:"🔥",ru:"Изжога",en:"Heartburn",
+   low:["lac"],high:["eco","cdi"],
+   tip_ru:"Дисбаланс pH. Противовоспалительные продукты и пробиотики помогут.",
+   tip_en:"pH imbalance. Anti-inflammatory foods and probiotics will help."},
+  {id:"alle",ic:"🤧",ru:"Аллергия",en:"Allergies",
+   low:["lac","bif","akk"],high:[],
+   tip_ru:"Снижение микробного разнообразия связано с аллергическими реакциями.",
+   tip_en:"Reduced microbial diversity is linked to allergic reactions."},
+];
+
 const BASELINES_BY_AGE = {
   child:  {bif:80,lac:70,akk:45,fae:50,bac:45,cdi:8, eco:6, can:5},
   teen:   {bif:72,lac:65,akk:48,fae:54,bac:48,cdi:10,eco:8, can:7},
@@ -380,7 +435,7 @@ function getBaselineByAge(age){
 const T = {
   ru:{
     title:"MicroVerse", sub:"GUT & FOOD LAB",
-    tabs:["Калькулятор","Дневник 24ч","Рекомендации"],
+    tabs:["Калькулятор","Дневник 24ч","Рекомендации","Симптомы"],
     search:"Введите продукт...", addBtn:"Добавить", amtLabel:"Количество (г)",
     yourDiet:"Ваш рацион", noFoods:"Добавьте продукты чтобы увидеть анализ",
     nutTitle:"Питательная ценность", kcal:"ккал", g:"г",
@@ -412,10 +467,20 @@ const T = {
     gut_warn:"Требует внимания",
     gut_bad:"Дисбаланс микробиома",
     age:"Возраст",
+    symTitle:"Режим симптомов",
+    symSub:"Выберите симптомы — получите персональные рекомендации по питанию",
+    symNone:"Выберите один или несколько симптомов выше",
+    symEat:"Рекомендуем добавить в рацион:",
+    symAvoid:"Ограничьте или исключите:",
+    symAffect:"Вероятный дисбаланс бактерий:",
+    symLow:"Снижены:",
+    symHigh:"Повышены:",
+    symTip:"Что происходит:",
+    symClear:"Сбросить",
   },
   en:{
     title:"MicroVerse", sub:"GUT & FOOD LAB",
-    tabs:["Calculator","24h Diary","Recommendations"],
+    tabs:["Calculator","24h Diary","Recommendations","Symptoms"],
     search:"Search food...", addBtn:"Add", amtLabel:"Amount (g)",
     yourDiet:"Your Diet", noFoods:"Add foods to see the analysis",
     nutTitle:"Nutrition Facts", kcal:"kcal", g:"g",
@@ -447,6 +512,16 @@ const T = {
     gut_warn:"Needs attention",
     gut_bad:"Microbiome imbalance",
     age:"Age",
+    symTitle:"Symptom Mode",
+    symSub:"Select your symptoms — get personalized diet recommendations",
+    symNone:"Select one or more symptoms above",
+    symEat:"Recommended foods to add:",
+    symAvoid:"Limit or avoid:",
+    symAffect:"Likely bacteria imbalance:",
+    symLow:"Low:",
+    symHigh:"High:",
+    symTip:"What's happening:",
+    symClear:"Reset",
   }
 };
 
@@ -1452,6 +1527,230 @@ function RecommendationsTab({log,mb,t,lang,baseline}){
 }
 
 // ============================================================
+// SYMPTOMS TAB
+// ============================================================
+function SymptomsTab({t,lang}){
+  const [selected,setSelected]=useState(new Set());
+
+  const toggle=(id)=>setSelected(prev=>{
+    const next=new Set(prev);
+    if(next.has(id))next.delete(id); else next.add(id);
+    return next;
+  });
+
+  const analysis=useMemo(()=>{
+    if(!selected.size)return null;
+    const active=SYMPTOMS.filter(s=>selected.has(s.id));
+    const lowBact=[...new Set(active.flatMap(s=>s.low))];
+    const highBact=[...new Set(active.flatMap(s=>s.high))];
+
+    const eatFoods=FOODS
+      .filter(f=>
+        f.boost.some(b=>lowBact.includes(b))||
+        (f.pro&&lowBact.some(b=>["lac","bif"].includes(b)))||
+        f.sup.some(b=>highBact.includes(b))
+      )
+      .filter(f=>!f.boost.some(b=>highBact.includes(b)))
+      .sort((a,b)=>b.pre-a.pre||(b.pro?1:0)-(a.pro?1:0)||b.fib-a.fib)
+      .slice(0,12);
+
+    const avoidFoods=FOODS
+      .filter(f=>f.boost.some(b=>highBact.includes(b))||(f.sug==="simple"&&f.c>20&&!f.pro))
+      .filter(f=>!f.pro)
+      .sort((a,b)=>b.cal-a.cal)
+      .slice(0,8);
+
+    return{lowBact,highBact,eatFoods,avoidFoods,active};
+  },[selected]);
+
+  const name=f=>f[lang==="ru"?"ru":"en"];
+  const sname=s=>lang==="ru"?s.ru:s.en;
+
+  return(
+    <div style={{animation:"fadeUp .4s ease",maxWidth:1100,margin:"0 auto"}}>
+
+      {/* Header */}
+      <div style={{marginBottom:24,display:"flex",alignItems:"flex-start",justifyContent:"space-between",flexWrap:"wrap",gap:12}}>
+        <div>
+          <h2 style={{fontSize:20,fontWeight:700,color:"#ccd6f6",marginBottom:4}}>{t.symTitle}</h2>
+          <p style={{fontSize:13,color:"#4a5568"}}>{t.symSub}</p>
+        </div>
+        {selected.size>0&&(
+          <button className="mv-btn mv-btn-ghost" onClick={()=>setSelected(new Set())}>
+            × {t.symClear}
+          </button>
+        )}
+      </div>
+
+      {/* Symptom chips */}
+      <div style={{display:"flex",flexWrap:"wrap",gap:10,marginBottom:28}}>
+        {SYMPTOMS.map(s=>{
+          const on=selected.has(s.id);
+          return(
+            <button key={s.id} onClick={()=>toggle(s.id)}
+              style={{
+                padding:"10px 16px",cursor:"pointer",
+                borderRadius:10,fontFamily:"'DM Sans',sans-serif",
+                fontSize:13,fontWeight:500,transition:"all .2s",
+                display:"flex",alignItems:"center",gap:8,
+                background:on?"rgba(100,255,218,0.12)":"rgba(10,22,40,0.8)",
+                border:`1px solid ${on?"rgba(100,255,218,0.45)":"rgba(100,255,218,0.1)"}`,
+                color:on?"#64ffda":"#8892b0",
+                boxShadow:on?"0 0 12px rgba(100,255,218,0.1)":"none",
+              }}>
+              <span style={{fontSize:16}}>{s.ic}</span>
+              <span>{sname(s)}</span>
+              {on&&<span style={{fontSize:10,opacity:.7}}>✓</span>}
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Empty state */}
+      {!analysis&&(
+        <div style={{textAlign:"center",padding:"48px 0",color:"#3d5166"}}>
+          <div style={{fontSize:52,marginBottom:12,opacity:.5}}>🩺</div>
+          <div style={{fontSize:14}}>{t.symNone}</div>
+        </div>
+      )}
+
+      {/* Results */}
+      {analysis&&(
+        <div>
+          {/* Tips from selected symptoms */}
+          <div style={{display:"flex",flexWrap:"wrap",gap:12,marginBottom:20}}>
+            {analysis.active.map(s=>(
+              <div key={s.id} className="mv-card" style={{flex:"1 1 280px",
+                borderColor:"rgba(100,255,218,0.2)",background:"rgba(100,255,218,0.04)"}}>
+                <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:6}}>
+                  <span style={{fontSize:20}}>{s.ic}</span>
+                  <span style={{fontSize:14,fontWeight:600,color:"#64ffda"}}>{sname(s)}</span>
+                </div>
+                <p style={{fontSize:12,color:"#8892b0",lineHeight:1.6,marginBottom:0}}>
+                  {lang==="ru"?s.tip_ru:s.tip_en}
+                </p>
+              </div>
+            ))}
+          </div>
+
+          {/* Bacteria status */}
+          <div className="mv-card" style={{marginBottom:20}}>
+            <div style={{fontSize:11,color:"rgba(100,255,218,0.6)",fontFamily:"'Space Mono',monospace",
+              letterSpacing:"0.08em",textTransform:"uppercase",marginBottom:12}}>
+              {t.symAffect}
+            </div>
+            <div style={{display:"flex",flexWrap:"wrap",gap:16}}>
+              {analysis.lowBact.length>0&&(
+                <div style={{flex:1,minWidth:200}}>
+                  <div style={{fontSize:11,color:"rgba(248,113,113,0.6)",marginBottom:8,
+                    fontFamily:"'Space Mono',monospace",textTransform:"uppercase",letterSpacing:"0.06em"}}>
+                    ↓ {t.symLow}
+                  </div>
+                  <div style={{display:"flex",flexWrap:"wrap",gap:6}}>
+                    {analysis.lowBact.map(id=>{
+                      const b=BM[id];if(!b)return null;
+                      return(
+                        <div key={id} style={{padding:"6px 12px",borderRadius:8,
+                          background:`rgba(${hexToRgb(b.color)},0.08)`,
+                          border:`1px solid rgba(${hexToRgb(b.color)},0.25)`,
+                          fontSize:12,color:b.color,fontWeight:500}}>
+                          {lang==="ru"?b.ru:b.en}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+              {analysis.highBact.length>0&&(
+                <div style={{flex:1,minWidth:200}}>
+                  <div style={{fontSize:11,color:"rgba(251,146,60,0.6)",marginBottom:8,
+                    fontFamily:"'Space Mono',monospace",textTransform:"uppercase",letterSpacing:"0.06em"}}>
+                    ↑ {t.symHigh}
+                  </div>
+                  <div style={{display:"flex",flexWrap:"wrap",gap:6}}>
+                    {analysis.highBact.map(id=>{
+                      const b=BM[id];if(!b)return null;
+                      return(
+                        <div key={id} style={{padding:"6px 12px",borderRadius:8,
+                          background:`rgba(${hexToRgb(b.color)},0.08)`,
+                          border:`1px solid rgba(${hexToRgb(b.color)},0.25)`,
+                          fontSize:12,color:b.color,fontWeight:500}}>
+                          {lang==="ru"?b.ru:b.en}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Two columns: eat / avoid */}
+          <div className="two-col" style={{display:"flex",gap:20,alignItems:"flex-start"}}>
+
+            {/* Foods to eat */}
+            <div style={{flex:1,minWidth:0}}>
+              <div style={{fontSize:12,color:"rgba(100,255,218,0.6)",fontFamily:"'Space Mono',monospace",
+                letterSpacing:"0.08em",textTransform:"uppercase",marginBottom:12,
+                paddingBottom:6,borderBottom:"1px solid rgba(100,255,218,0.12)"}}>
+                ✓ {t.symEat}
+              </div>
+              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8}}>
+                {analysis.eatFoods.map(f=>(
+                  <div key={f.id} style={{
+                    padding:"10px 12px",background:"rgba(100,255,218,0.04)",
+                    border:"1px solid rgba(100,255,218,0.12)",borderRadius:10,
+                    display:"flex",alignItems:"flex-start",gap:8,
+                  }}>
+                    <span style={{fontSize:18,flexShrink:0}}>{f.ic}</span>
+                    <div style={{minWidth:0}}>
+                      <div style={{fontSize:12,fontWeight:600,color:"#ccd6f6",
+                        whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{name(f)}</div>
+                      <div style={{display:"flex",gap:4,marginTop:3,flexWrap:"wrap"}}>
+                        {f.pre>=7&&<span className="tag tag-green">PRE {f.pre}</span>}
+                        {f.pro&&<span className="tag tag-cyan">PRO</span>}
+                        {f.fib>=5&&<span className="tag tag-purple">FIB {f.fib}g</span>}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Foods to avoid */}
+            <div style={{flex:"0 0 300px",minWidth:260}}>
+              <div style={{fontSize:12,color:"rgba(248,113,113,0.6)",fontFamily:"'Space Mono',monospace",
+                letterSpacing:"0.08em",textTransform:"uppercase",marginBottom:12,
+                paddingBottom:6,borderBottom:"1px solid rgba(248,113,113,0.12)"}}>
+                ✗ {t.symAvoid}
+              </div>
+              <div style={{display:"flex",flexDirection:"column",gap:6}}>
+                {analysis.avoidFoods.map(f=>(
+                  <div key={f.id} style={{
+                    padding:"8px 12px",background:"rgba(248,113,113,0.04)",
+                    border:"1px solid rgba(248,113,113,0.1)",borderRadius:8,
+                    display:"flex",alignItems:"center",gap:8,
+                  }}>
+                    <span style={{fontSize:16}}>{f.ic}</span>
+                    <div style={{flex:1}}>
+                      <div style={{fontSize:12,fontWeight:500,color:"#ccd6f6"}}>{name(f)}</div>
+                      <div style={{fontSize:10,color:"#4a5568",marginTop:1}}>
+                        {f.cal} kcal · {f.c}g carbs
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ============================================================
 // PARTICLE BACKGROUND (decorative)
 // ============================================================
 function ParticleField(){
@@ -1535,7 +1834,7 @@ export default function App(){
         <div style={{display:"flex",flex:1,justifyContent:"center",borderBottom:"none",overflowX:"auto"}}>
           {t.tabs.map((label,i)=>(
             <button key={i} className={`mv-tab${tab===i?" active":""}`} onClick={()=>setTab(i)}>
-              {["⚗️","📋","🎯"][i]} {label}
+              {["⚗️","📋","🎯","🩺"][i]} {label}
             </button>
           ))}
         </div>
@@ -1587,6 +1886,7 @@ export default function App(){
         {tab===0&&<CalculatorTab log={calcLog} mb={mb} setLog={setCalcLog} t={t} lang={lang} baseline={baseline}/>}
         {tab===1&&<DiaryTab t={t} lang={lang} baseline={baseline}/>}
         {tab===2&&<RecommendationsTab log={calcLog} mb={mb} t={t} lang={lang} baseline={baseline}/>}
+        {tab===3&&<SymptomsTab t={t} lang={lang}/>}
       </main>
 
       {/* ── FOOTER ── */}
