@@ -1,7 +1,7 @@
 import { useState, useMemo, useCallback, useEffect, useRef } from "react";
 
 // ============================================================
-// GLOBAL STYLES — Bioluminescent Lab aesthetic
+// GLOBAL STYLES — Fresh Lab (light theme)
 // ============================================================
 (() => {
   if (document.getElementById("mv-global")) return;
@@ -13,19 +13,19 @@ import { useState, useMemo, useCallback, useEffect, useRef } from "react";
   s.id = "mv-global";
   s.textContent = `
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body { background:#020c1b; color:#ccd6f6; font-family:'DM Sans',sans-serif; overflow-x:hidden; }
+    body { background:#f0f9f5; color:#1e293b; font-family:'DM Sans',sans-serif; overflow-x:hidden; }
     #root { min-height:100vh; }
     ::-webkit-scrollbar { width:4px; height:4px; }
-    ::-webkit-scrollbar-track { background:#0a1628; }
-    ::-webkit-scrollbar-thumb { background:rgba(100,255,218,0.3); border-radius:2px; }
-    
+    ::-webkit-scrollbar-track { background:#e2f4ee; }
+    ::-webkit-scrollbar-thumb { background:rgba(13,148,136,0.35); border-radius:2px; }
+
     @keyframes blobPulse {
-      0%,100% { opacity:.8; transform:scale(1); }
+      0%,100% { opacity:.85; transform:scale(1); }
       50%      { opacity:1;  transform:scale(1.07); }
     }
     @keyframes badPulse {
-      0%,100% { opacity:.6; }
-      50%     { opacity:.9; }
+      0%,100% { opacity:.65; }
+      50%     { opacity:.95; }
     }
     @keyframes fadeUp {
       from { opacity:0; transform:translateY(10px); }
@@ -41,13 +41,13 @@ import { useState, useMemo, useCallback, useEffect, useRef } from "react";
     }
     @keyframes spin { from{transform:rotate(0)} to{transform:rotate(360deg)} }
     @keyframes barGrow { from{width:0} to{width:var(--w)} }
-    
+
     .mv-card {
-      background:rgba(10,22,40,.85);
-      border:1px solid rgba(100,255,218,.1);
+      background:#ffffff;
+      border:1px solid rgba(13,148,136,.13);
       border-radius:12px;
       padding:16px;
-      backdrop-filter:blur(8px);
+      box-shadow:0 2px 12px rgba(13,148,136,.07);
     }
     .mv-btn {
       cursor:pointer; border:none; border-radius:8px;
@@ -56,35 +56,35 @@ import { useState, useMemo, useCallback, useEffect, useRef } from "react";
       display:inline-flex; align-items:center; gap:6px;
     }
     .mv-btn:disabled { opacity:.4; cursor:not-allowed; }
-    .mv-btn-primary { background:linear-gradient(135deg,#64ffda,#00d4ff); color:#020c1b; }
-    .mv-btn-primary:hover:not(:disabled) { filter:brightness(1.12); transform:translateY(-1px); box-shadow:0 4px 20px rgba(100,255,218,.35); }
-    .mv-btn-ghost { background:transparent; color:#8892b0; border:1px solid rgba(100,255,218,.15); }
-    .mv-btn-ghost:hover { border-color:#64ffda; color:#64ffda; }
-    .mv-btn-danger { background:rgba(248,113,113,.1); color:#f87171; border:1px solid rgba(248,113,113,.2); }
-    .mv-btn-danger:hover { background:rgba(248,113,113,.2); }
+    .mv-btn-primary { background:linear-gradient(135deg,#0d9488,#0891b2); color:#ffffff; }
+    .mv-btn-primary:hover:not(:disabled) { filter:brightness(1.1); transform:translateY(-1px); box-shadow:0 4px 20px rgba(13,148,136,.3); }
+    .mv-btn-ghost { background:transparent; color:#64748b; border:1px solid rgba(13,148,136,.2); }
+    .mv-btn-ghost:hover { border-color:#0d9488; color:#0d9488; }
+    .mv-btn-danger { background:rgba(248,113,113,.08); color:#dc2626; border:1px solid rgba(248,113,113,.2); }
+    .mv-btn-danger:hover { background:rgba(248,113,113,.15); }
     .mv-input {
-      background:rgba(15,32,64,.8); border:1px solid rgba(100,255,218,.15);
-      border-radius:8px; color:#ccd6f6;
+      background:#f8fffd; border:1px solid rgba(13,148,136,.2);
+      border-radius:8px; color:#1e293b;
       font-family:'DM Sans',sans-serif; font-size:14px;
       padding:10px 14px; outline:none; transition:border-color .2s,box-shadow .2s; width:100%;
     }
-    .mv-input:focus { border-color:#64ffda; box-shadow:0 0 0 3px rgba(100,255,218,.1); }
-    .mv-input::placeholder { color:#3d5166; }
-    .mv-tab { cursor:pointer; padding:10px 18px; font-weight:500; font-size:14px; color:#8892b0; border-bottom:2px solid transparent; transition:all .2s; white-space:nowrap; background:none; border-top:none; border-left:none; border-right:none; font-family:'DM Sans',sans-serif; }
-    .mv-tab:hover { color:#64ffda; }
-    .mv-tab.active { color:#64ffda; border-bottom-color:#64ffda; }
+    .mv-input:focus { border-color:#0d9488; box-shadow:0 0 0 3px rgba(13,148,136,.12); }
+    .mv-input::placeholder { color:#94a3b8; }
+    .mv-tab { cursor:pointer; padding:10px 18px; font-weight:500; font-size:14px; color:#64748b; border-bottom:2px solid transparent; transition:all .2s; white-space:nowrap; background:none; border-top:none; border-left:none; border-right:none; font-family:'DM Sans',sans-serif; }
+    .mv-tab:hover { color:#0d9488; }
+    .mv-tab.active { color:#0d9488; border-bottom-color:#0d9488; }
     .food-enter { animation:slideIn .3s ease both; }
-    .dropdown { position:absolute; top:calc(100% + 4px); left:0; right:0; background:#0a1628; border:1px solid rgba(100,255,218,.2); border-radius:10px; max-height:260px; overflow-y:auto; z-index:200; box-shadow:0 12px 40px rgba(0,0,0,.6); }
-    .dropdown-item { padding:10px 14px; cursor:pointer; transition:background .15s; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(100,255,218,.05); }
+    .dropdown { position:absolute; top:calc(100% + 4px); left:0; right:0; background:#ffffff; border:1px solid rgba(13,148,136,.18); border-radius:10px; max-height:260px; overflow-y:auto; z-index:200; box-shadow:0 8px 32px rgba(13,148,136,.12); }
+    .dropdown-item { padding:10px 14px; cursor:pointer; transition:background .15s; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(13,148,136,.07); }
     .dropdown-item:last-child { border-bottom:none; }
-    .dropdown-item:hover, .dropdown-item.hi { background:rgba(100,255,218,.06); }
+    .dropdown-item:hover, .dropdown-item.hi { background:rgba(13,148,136,.06); }
     .tag { display:inline-block; border-radius:4px; font-size:10px; font-weight:700; letter-spacing:.05em; padding:2px 7px; text-transform:uppercase; }
-    .tag-green { background:rgba(100,255,218,.1); color:#64ffda; }
-    .tag-cyan  { background:rgba(0,212,255,.1);   color:#00d4ff; }
-    .tag-red   { background:rgba(248,113,113,.1);  color:#f87171; }
-    .tag-orange{ background:rgba(251,146,60,.1);   color:#fb923c; }
-    .tag-purple{ background:rgba(167,139,250,.1);  color:#a78bfa; }
-    .tag-yellow{ background:rgba(251,191,36,.1);   color:#fbbf24; }
+    .tag-green { background:#d1fae5; color:#065f46; }
+    .tag-cyan  { background:#cffafe; color:#0e7490; }
+    .tag-red   { background:#fee2e2; color:#dc2626; }
+    .tag-orange{ background:#ffedd5; color:#c2410c; }
+    .tag-purple{ background:#ede9fe; color:#6d28d9; }
+    .tag-yellow{ background:#fef3c7; color:#92400e; }
     @media(max-width:860px) { .two-col { flex-direction:column !important; } }
   `;
   document.head.appendChild(s);
@@ -568,10 +568,10 @@ function healthScore(mb){
 }
 
 function scoreColor(sc){
-  if(sc>=76)return"#64ffda";
-  if(sc>=56)return"#00d4ff";
-  if(sc>=36)return"#fbbf24";
-  return"#f87171";
+  if(sc>=76)return"#0d9488";
+  if(sc>=56)return"#0891b2";
+  if(sc>=36)return"#d97706";
+  return"#dc2626";
 }
 
 function scoreLabel(sc,t){
@@ -601,8 +601,8 @@ function MicrobiomeViz({mb,lang}){
           </radialGradient>
         ))}
         <radialGradient id="gut-fill" cx="50%" cy="50%" r="50%">
-          <stop offset="0%" stopColor="#0d2340" stopOpacity="1"/>
-          <stop offset="100%" stopColor="#060f1e" stopOpacity="1"/>
+          <stop offset="0%" stopColor="#e8f5f1" stopOpacity="1"/>
+          <stop offset="100%" stopColor="#d4ede6" stopOpacity="1"/>
         </radialGradient>
         <filter id="glow-f" x="-30%" y="-30%" width="160%" height="160%">
           <feGaussianBlur stdDeviation="2.5" result="b"/>
@@ -612,16 +612,16 @@ function MicrobiomeViz({mb,lang}){
 
       {/* Gut background ellipse */}
       <ellipse cx={W/2} cy={H/2} rx={W/2-4} ry={H/2-6} fill="url(#gut-fill)"/>
-      <ellipse cx={W/2} cy={H/2} rx={W/2-4} ry={H/2-6} fill="none" stroke="rgba(100,255,218,0.12)" strokeWidth="1"/>
+      <ellipse cx={W/2} cy={H/2} rx={W/2-4} ry={H/2-6} fill="none" stroke="rgba(13,148,136,0.12)" strokeWidth="1"/>
 
       {/* Inner wall detail */}
-      <ellipse cx={W/2} cy={H/2} rx={W/2-18} ry={H/2-22} fill="none" stroke="rgba(100,255,218,0.04)" strokeWidth="4" strokeDasharray="6,3"/>
+      <ellipse cx={W/2} cy={H/2} rx={W/2-18} ry={H/2-22} fill="none" stroke="rgba(13,148,136,0.05)" strokeWidth="4" strokeDasharray="6,3"/>
 
       {/* Zone divider */}
-      <line x1={16} y1={divY} x2={W-16} y2={divY} stroke="rgba(100,255,218,0.1)" strokeWidth="1" strokeDasharray="5,4"/>
+      <line x1={16} y1={divY} x2={W-16} y2={divY} stroke="rgba(13,148,136,0.12)" strokeWidth="1" strokeDasharray="5,4"/>
 
       {/* Zone labels */}
-      <text x={22} y={divY-7} fill="rgba(100,255,218,0.25)" fontSize="7.5" fontFamily="'Space Mono',monospace" letterSpacing="0.08em">
+      <text x={22} y={divY-7} fill="rgba(13,148,136,0.4)" fontSize="7.5" fontFamily="'Space Mono',monospace" letterSpacing="0.08em">
         {lang==="ru"?"ПОЛЕЗНАЯ ЗОНА":"BENEFICIAL ZONE"}
       </text>
       <text x={22} y={H-9} fill="rgba(248,113,113,0.25)" fontSize="7.5" fontFamily="'Space Mono',monospace" letterSpacing="0.08em">
@@ -685,7 +685,7 @@ function HealthRing({score,t}){
           </radialGradient>
         </defs>
         <circle cx={65} cy={65} r={R+8} fill="url(#ring-glow)"/>
-        <circle cx={65} cy={65} r={R} fill="none" stroke="rgba(100,255,218,0.08)" strokeWidth="9"/>
+        <circle cx={65} cy={65} r={R} fill="none" stroke="rgba(13,148,136,0.07)" strokeWidth="9"/>
         <circle cx={65} cy={65} r={R} fill="none" stroke={col} strokeWidth="9"
           strokeDasharray={`${dash} ${C-dash}`} strokeDashoffset={C/4}
           strokeLinecap="round"
@@ -782,8 +782,8 @@ function FoodSearch({lang,t,onAdd}){
                 <div style={{display:"flex",alignItems:"center",gap:8}}>
                   <span style={{fontSize:16}}>{f.ic}</span>
                   <div>
-                    <div style={{fontSize:13,color:"#ccd6f6",fontWeight:500}}>{name(f)}</div>
-                    <div style={{fontSize:10,color:"#4a5568",marginTop:1}}>
+                    <div style={{fontSize:13,color:"#1e293b",fontWeight:500}}>{name(f)}</div>
+                    <div style={{fontSize:10,color:"#64748b",marginTop:1}}>
                       {f.cal} {t.kcal} | {t.fib}: {f.fib}{t.g} | pre: {f.pre}/10
                     </div>
                   </div>
@@ -805,7 +805,7 @@ function FoodSearch({lang,t,onAdd}){
             onChange={e=>setAmt(Number(e.target.value))}
             style={{paddingRight:28,textAlign:"center"}}/>
           <span style={{position:"absolute",right:10,top:"50%",transform:"translateY(-50%)",
-            color:"#4a5568",fontSize:12,pointerEvents:"none"}}>{t.g}</span>
+            color:"#64748b",fontSize:12,pointerEvents:"none"}}>{t.g}</span>
         </div>
         <button className="mv-btn mv-btn-primary" onClick={add} disabled={!sel||amt<=0}
           style={{flex:1}}>
@@ -815,9 +815,9 @@ function FoodSearch({lang,t,onAdd}){
 
       {/* Selected food preview */}
       {sel&&(
-        <div style={{padding:"10px 12px",background:"rgba(100,255,218,0.05)",
-          border:"1px solid rgba(100,255,218,0.15)",borderRadius:8,
-          fontSize:12,color:"#8892b0",lineHeight:1.6,animation:"fadeUp .3s ease"}}>
+        <div style={{padding:"10px 12px",background:"rgba(13,148,136,0.06)",
+          border:"1px solid rgba(13,148,136,0.18)",borderRadius:8,
+          fontSize:12,color:"#475569",lineHeight:1.6,animation:"fadeUp .3s ease"}}>
           <div style={{fontWeight:600,color:"#64ffda",marginBottom:4,fontSize:13}}>
             {sel.ic} {name(sel)}
           </div>
@@ -847,7 +847,7 @@ function FoodSearch({lang,t,onAdd}){
 function FoodLog({log,t,lang,onRemove,onClear}){
   const name=f=>f[lang==="ru"?"ru":"en"];
   if(!log.length)return(
-    <div style={{textAlign:"center",padding:"24px 0",color:"#3d5166",fontSize:13,fontStyle:"italic"}}>
+    <div style={{textAlign:"center",padding:"24px 0",color:"#94a3b8",fontSize:13,fontStyle:"italic"}}>
       {t.noFoods}
     </div>
   );
@@ -860,9 +860,9 @@ function FoodLog({log,t,lang,onRemove,onClear}){
         }}>
           <span style={{fontSize:16,flexShrink:0}}>{f.ic}</span>
           <div style={{flex:1,minWidth:0}}>
-            <div style={{fontSize:13,fontWeight:500,color:"#ccd6f6",
+            <div style={{fontSize:13,fontWeight:500,color:"#1e293b",
               whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{name(f)}</div>
-            <div style={{fontSize:11,color:"#4a5568",marginTop:1}}>
+            <div style={{fontSize:11,color:"#64748b",marginTop:1}}>
               {amount}{t.g} · {fmt(f.cal*amount/100)} {t.kcal} · {t.fib} {fmt(f.fib*amount/100)}{t.g}
             </div>
           </div>
@@ -939,11 +939,11 @@ function BacteriaPanel({mb,t,lang,baseline}){
     const diff=sc-base;
     const name=lang==="ru"?b.ru:b.en;
     return(
-      <div style={{padding:"8px 0",borderBottom:"1px solid rgba(100,255,218,0.05)"}}>
+      <div style={{padding:"8px 0",borderBottom:"1px solid rgba(13,148,136,0.06)"}}>
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:5}}>
           <div>
-            <div style={{fontSize:12,fontWeight:600,color:"#ccd6f6"}}>{name}</div>
-            <div style={{fontSize:9,color:"#3d5166",fontFamily:"'Space Mono',monospace",marginTop:1}}>{b.lat}</div>
+            <div style={{fontSize:12,fontWeight:600,color:"#1e293b"}}>{name}</div>
+            <div style={{fontSize:9,color:"#94a3b8",fontFamily:"'Space Mono',monospace",marginTop:1}}>{b.lat}</div>
           </div>
           <div style={{display:"flex",alignItems:"center",gap:6}}>
             {diff!==0&&(
@@ -1002,7 +1002,7 @@ function PrebioticRow({log,t}){
   const col=preAvg>=7?"#64ffda":preAvg>=4?"#fbbf24":"#f87171";
   return(
     <div style={{display:"flex",gap:10}}>
-      <div style={{flex:1,background:"rgba(100,255,218,0.04)",border:"1px solid rgba(100,255,218,0.1)",
+      <div style={{flex:1,background:"rgba(13,148,136,0.05)",border:"1px solid rgba(13,148,136,0.12)",
         borderRadius:8,padding:"10px 12px"}}>
         <div style={{fontSize:10,color:"rgba(204,214,246,0.4)",textTransform:"uppercase",
           letterSpacing:"0.06em",marginBottom:4,fontFamily:"'Space Mono',monospace"}}>
@@ -1054,7 +1054,7 @@ function CalculatorTab({log,mb,setLog,t,lang,baseline}){
 
         {/* Search card */}
         <div className="mv-card">
-          <div style={{fontSize:11,color:"rgba(100,255,218,0.6)",fontFamily:"'Space Mono',monospace",
+          <div style={{fontSize:11,color:"rgba(13,148,136,0.9)",fontFamily:"'Space Mono',monospace",
             letterSpacing:"0.08em",textTransform:"uppercase",marginBottom:10}}>
             ＋ {lang==="ru"?"Добавить продукт":"Add Food"}
           </div>
@@ -1064,12 +1064,12 @@ function CalculatorTab({log,mb,setLog,t,lang,baseline}){
         {/* Diet log */}
         <div className="mv-card">
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10}}>
-            <div style={{fontSize:11,color:"rgba(100,255,218,0.6)",fontFamily:"'Space Mono',monospace",
+            <div style={{fontSize:11,color:"rgba(13,148,136,0.9)",fontFamily:"'Space Mono',monospace",
               letterSpacing:"0.08em",textTransform:"uppercase"}}>
               {t.yourDiet}
             </div>
             {log.length>0&&(
-              <span style={{fontSize:11,color:"#4a5568"}}>{log.length} {lang==="ru"?"позиций":"items"}</span>
+              <span style={{fontSize:11,color:"#64748b"}}>{log.length} {lang==="ru"?"позиций":"items"}</span>
             )}
           </div>
           <FoodLog log={log} t={t} lang={lang} onRemove={onRemove} onClear={onClear}/>
@@ -1078,7 +1078,7 @@ function CalculatorTab({log,mb,setLog,t,lang,baseline}){
         {/* Nutrition summary */}
         {log.length>0&&(
           <div className="mv-card" style={{animation:"fadeUp .3s ease"}}>
-            <div style={{fontSize:11,color:"rgba(100,255,218,0.6)",fontFamily:"'Space Mono',monospace",
+            <div style={{fontSize:11,color:"rgba(13,148,136,0.9)",fontFamily:"'Space Mono',monospace",
               letterSpacing:"0.08em",textTransform:"uppercase",marginBottom:10}}>
               {t.nutTitle} · {t.total}
             </div>
@@ -1095,7 +1095,7 @@ function CalculatorTab({log,mb,setLog,t,lang,baseline}){
 
         {/* Health ring + score */}
         <div className="mv-card">
-          <div style={{fontSize:11,color:"rgba(100,255,218,0.6)",fontFamily:"'Space Mono',monospace",
+          <div style={{fontSize:11,color:"rgba(13,148,136,0.9)",fontFamily:"'Space Mono',monospace",
             letterSpacing:"0.08em",textTransform:"uppercase",marginBottom:12}}>
             {t.micro}
           </div>
@@ -1109,7 +1109,7 @@ function CalculatorTab({log,mb,setLog,t,lang,baseline}){
 
         {/* Bacteria panel */}
         <div className="mv-card">
-          <div style={{fontSize:11,color:"rgba(100,255,218,0.6)",fontFamily:"'Space Mono',monospace",
+          <div style={{fontSize:11,color:"rgba(13,148,136,0.9)",fontFamily:"'Space Mono',monospace",
             letterSpacing:"0.08em",textTransform:"uppercase",marginBottom:10}}>
             {t.bacteriaTitle}
           </div>
@@ -1153,12 +1153,12 @@ function DiaryTab({t,lang,baseline}){
     <div style={{animation:"fadeUp .4s ease"}}>
       <div style={{marginBottom:20,display:"flex",alignItems:"center",justifyContent:"space-between",flexWrap:"wrap",gap:12}}>
         <div>
-          <h2 style={{fontSize:18,fontWeight:700,color:"#ccd6f6",marginBottom:2}}>{t.diaryTitle}</h2>
-          <p style={{fontSize:12,color:"#4a5568"}}>{t.diaryHint}</p>
+          <h2 style={{fontSize:18,fontWeight:700,color:"#1e293b",marginBottom:2}}>{t.diaryTitle}</h2>
+          <p style={{fontSize:12,color:"#64748b"}}>{t.diaryHint}</p>
         </div>
         {allLog.length>0&&(
           <div style={{display:"flex",alignItems:"center",gap:10,padding:"8px 16px",
-            background:"rgba(100,255,218,0.05)",border:"1px solid rgba(100,255,218,0.15)",borderRadius:10}}>
+            background:"rgba(13,148,136,0.06)",border:"1px solid rgba(13,148,136,0.18)",borderRadius:10}}>
             <span style={{fontSize:11,color:"rgba(204,214,246,0.5)",textTransform:"uppercase",
               letterSpacing:"0.06em",fontFamily:"'Space Mono',monospace"}}>{t.dayScore}</span>
             <span style={{fontSize:22,fontWeight:700,color:scoreColor(hs),fontFamily:"'Space Mono',monospace",
@@ -1169,13 +1169,13 @@ function DiaryTab({t,lang,baseline}){
       </div>
 
       {/* Meal selector tabs */}
-      <div style={{display:"flex",gap:0,borderBottom:"1px solid rgba(100,255,218,0.1)",marginBottom:20,overflowX:"auto"}}>
+      <div style={{display:"flex",gap:0,borderBottom:"1px solid rgba(13,148,136,0.12)",marginBottom:20,overflowX:"auto"}}>
         {t.meals.map((m,i)=>(
           <button key={i} onClick={()=>setActiveMeal(i)}
             style={{
               padding:"10px 20px",cursor:"pointer",border:"none",background:"transparent",
               fontFamily:"'DM Sans',sans-serif",fontSize:14,fontWeight:500,
-              color:activeMeal===i?mealColors[i]:"#4a5568",
+              color:activeMeal===i?mealColors[i]:"#64748b",
               borderBottom:`2px solid ${activeMeal===i?mealColors[i]:"transparent"}`,
               transition:"all .2s",whiteSpace:"nowrap",
             }}>
@@ -1205,18 +1205,18 @@ function DiaryTab({t,lang,baseline}){
           {/* Meal food list */}
           <div className="mv-card">
             {meals[activeMeal].length===0?(
-              <div style={{textAlign:"center",padding:"16px 0",color:"#3d5166",fontSize:12,fontStyle:"italic"}}>
+              <div style={{textAlign:"center",padding:"16px 0",color:"#94a3b8",fontSize:12,fontStyle:"italic"}}>
                 {t.diaryEmpty}
               </div>
             ):(
               meals[activeMeal].map(({id,food:f,amount})=>(
                 <div key={id} className="food-enter" style={{display:"flex",alignItems:"center",gap:8,
-                  padding:"7px 0",borderBottom:"1px solid rgba(100,255,218,0.05)"}}>
+                  padding:"7px 0",borderBottom:"1px solid rgba(13,148,136,0.06)"}}>
                   <span style={{fontSize:16}}>{f.ic}</span>
                   <div style={{flex:1,minWidth:0}}>
-                    <div style={{fontSize:13,color:"#ccd6f6",fontWeight:500,
+                    <div style={{fontSize:13,color:"#1e293b",fontWeight:500,
                       whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{name(f)}</div>
-                    <div style={{fontSize:11,color:"#4a5568"}}>{amount}{t.g} · {fmt(f.cal*amount/100)}{t.kcal}</div>
+                    <div style={{fontSize:11,color:"#64748b"}}>{amount}{t.g} · {fmt(f.cal*amount/100)}{t.kcal}</div>
                   </div>
                   <button className="mv-btn mv-btn-danger" onClick={()=>onRemove(activeMeal,id)}
                     style={{padding:"4px 8px",fontSize:12}}>×</button>
@@ -1229,7 +1229,7 @@ function DiaryTab({t,lang,baseline}){
         <div style={{flex:1,minWidth:0,display:"flex",flexDirection:"column",gap:14}}>
           {/* Timeline progress */}
           <div className="mv-card">
-            <div style={{fontSize:11,color:"rgba(100,255,218,0.6)",fontFamily:"'Space Mono',monospace",
+            <div style={{fontSize:11,color:"rgba(13,148,136,0.9)",fontFamily:"'Space Mono',monospace",
               letterSpacing:"0.08em",textTransform:"uppercase",marginBottom:16}}>
               {lang==="ru"?"Прогресс дня":"Day Progress"}
             </div>
@@ -1240,7 +1240,7 @@ function DiaryTab({t,lang,baseline}){
                 const n=calcNutrition(meals[i]);
                 return(
                   <div key={i} style={{display:"flex",alignItems:"center",gap:12}}>
-                    <div style={{width:70,fontSize:11,color:meals[i].length?col:"#3d5166",
+                    <div style={{width:70,fontSize:11,color:meals[i].length?col:"#94a3b8",
                       fontWeight:meals[i].length?600:400}}>{m}</div>
                     <div style={{flex:1,height:8,background:"rgba(255,255,255,0.06)",borderRadius:4,overflow:"hidden"}}>
                       <div style={{height:"100%",width:`${sc}%`,borderRadius:4,
@@ -1249,8 +1249,8 @@ function DiaryTab({t,lang,baseline}){
                         opacity:meals[i].length?1:0.3}}/>
                     </div>
                     <div style={{width:32,textAlign:"right",fontSize:11,fontFamily:"'Space Mono',monospace",
-                      color:meals[i].length?scoreColor(sc):"#3d5166",fontWeight:700}}>{sc}</div>
-                    <div style={{width:50,textAlign:"right",fontSize:10,color:"#3d5166"}}>
+                      color:meals[i].length?scoreColor(sc):"#94a3b8",fontWeight:700}}>{sc}</div>
+                    <div style={{width:50,textAlign:"right",fontSize:10,color:"#94a3b8"}}>
                       {meals[i].length?`${fmt(n.cal)}${t.kcal}`:"—"}
                     </div>
                   </div>
@@ -1266,7 +1266,7 @@ function DiaryTab({t,lang,baseline}){
                 <MicrobiomeViz mb={totalMb} lang={lang}/>
               </div>
               <div className="mv-card">
-                <div style={{fontSize:11,color:"rgba(100,255,218,0.6)",fontFamily:"'Space Mono',monospace",
+                <div style={{fontSize:11,color:"rgba(13,148,136,0.9)",fontFamily:"'Space Mono',monospace",
                   letterSpacing:"0.08em",textTransform:"uppercase",marginBottom:10}}>
                   {t.bacteriaTitle}
                 </div>
@@ -1318,7 +1318,7 @@ function RecommendationsTab({log,mb,t,lang,baseline}){
     <div style={{display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",
       minHeight:300,gap:16,animation:"fadeUp .4s ease"}}>
       <div style={{fontSize:48,opacity:.5}}>🔬</div>
-      <div style={{fontSize:14,color:"#4a5568",textAlign:"center",maxWidth:360}}>{t.noLog}</div>
+      <div style={{fontSize:14,color:"#64748b",textAlign:"center",maxWidth:360}}>{t.noLog}</div>
     </div>
   );
 
@@ -1333,8 +1333,8 @@ function RecommendationsTab({log,mb,t,lang,baseline}){
         <div style={{display:"flex",alignItems:"center",gap:20,flexWrap:"wrap"}}>
           <HealthRing score={hs} t={t}/>
           <div style={{flex:1,minWidth:200}}>
-            <div style={{fontSize:20,fontWeight:700,color:"#ccd6f6",marginBottom:6}}>{t.recTitle}</div>
-            <div style={{fontSize:13,color:"#8892b0",marginBottom:12}}>{t.recSub}</div>
+            <div style={{fontSize:20,fontWeight:700,color:"#1e293b",marginBottom:6}}>{t.recTitle}</div>
+            <div style={{fontSize:13,color:"#475569",marginBottom:12}}>{t.recSub}</div>
             <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
               {analysis.deficient.length===0&&analysis.excess.length===0&&(
                 <span className="tag tag-green">✓ {lang==="ru"?"Отличный баланс!":"Excellent balance!"}</span>
@@ -1359,9 +1359,9 @@ function RecommendationsTab({log,mb,t,lang,baseline}){
         <div style={{flex:1,minWidth:0}}>
           {analysis.deficient.length>0&&(
             <>
-              <div style={{fontSize:12,color:"rgba(100,255,218,0.6)",fontFamily:"'Space Mono',monospace",
+              <div style={{fontSize:12,color:"rgba(13,148,136,0.9)",fontFamily:"'Space Mono',monospace",
                 letterSpacing:"0.08em",textTransform:"uppercase",marginBottom:12,
-                paddingBottom:6,borderBottom:"1px solid rgba(100,255,218,0.12)"}}>
+                paddingBottom:6,borderBottom:"1px solid rgba(13,148,136,0.12)"}}>
                 ↓ {t.defTitle}
               </div>
               {analysis.deficient.map(({b,sc,delta,topFoods})=>(
@@ -1372,7 +1372,7 @@ function RecommendationsTab({log,mb,t,lang,baseline}){
                       <div style={{fontSize:14,fontWeight:600,color:b.color,marginBottom:2}}>
                         {lang==="ru"?b.ru:b.en}
                       </div>
-                      <div style={{fontSize:10,color:"#4a5568",fontFamily:"'Space Mono',monospace"}}>{b.lat}</div>
+                      <div style={{fontSize:10,color:"#64748b",fontFamily:"'Space Mono',monospace"}}>{b.lat}</div>
                     </div>
                     <div style={{textAlign:"right"}}>
                       <div style={{fontSize:18,fontWeight:700,color:"#f87171",fontFamily:"'Space Mono',monospace"}}>
@@ -1383,23 +1383,23 @@ function RecommendationsTab({log,mb,t,lang,baseline}){
                       </div>
                     </div>
                   </div>
-                  <p style={{fontSize:12,color:"#8892b0",marginBottom:12,lineHeight:1.5}}>
+                  <p style={{fontSize:12,color:"#475569",marginBottom:12,lineHeight:1.5}}>
                     {lang==="ru"?b.desc_ru:b.desc_en}
                   </p>
-                  <div style={{fontSize:11,color:"rgba(100,255,218,0.5)",marginBottom:8,fontWeight:600,textTransform:"uppercase",letterSpacing:"0.05em"}}>
+                  <div style={{fontSize:11,color:"rgba(13,148,136,0.8)",marginBottom:8,fontWeight:600,textTransform:"uppercase",letterSpacing:"0.05em"}}>
                     {t.recAdd}
                   </div>
                   <div style={{display:"flex",flexWrap:"wrap",gap:8}}>
                     {topFoods.map(f=>(
                       <div key={f.id} style={{
-                        padding:"6px 10px",background:"rgba(100,255,218,0.05)",
-                        border:"1px solid rgba(100,255,218,0.15)",borderRadius:8,
+                        padding:"6px 10px",background:"rgba(13,148,136,0.06)",
+                        border:"1px solid rgba(13,148,136,0.18)",borderRadius:8,
                         display:"flex",alignItems:"center",gap:6,
                       }}>
                         <span style={{fontSize:14}}>{f.ic}</span>
                         <div>
-                          <div style={{fontSize:12,color:"#ccd6f6",fontWeight:500}}>{name(f)}</div>
-                          <div style={{fontSize:9,color:"#4a5568",fontFamily:"'Space Mono',monospace"}}>
+                          <div style={{fontSize:12,color:"#1e293b",fontWeight:500}}>{name(f)}</div>
+                          <div style={{fontSize:9,color:"#64748b",fontFamily:"'Space Mono',monospace"}}>
                             pre:{f.pre} fib:{f.fib}{t.g} {f.pro?"🔬":""}
                           </div>
                         </div>
@@ -1413,12 +1413,12 @@ function RecommendationsTab({log,mb,t,lang,baseline}){
 
           {/* General tips if all good */}
           {analysis.deficient.length===0&&(
-            <div className="mv-card" style={{borderColor:"rgba(100,255,218,0.2)",
-              background:"rgba(100,255,218,0.04)"}}>
+            <div className="mv-card" style={{borderColor:"rgba(13,148,136,0.25)",
+              background:"rgba(13,148,136,0.05)"}}>
               <div style={{fontSize:14,fontWeight:600,color:"#64ffda",marginBottom:8}}>
                 {lang==="ru"?"✓ Полезные бактерии в норме":"✓ Beneficial bacteria in balance"}
               </div>
-              <p style={{fontSize:12,color:"#8892b0",lineHeight:1.6}}>
+              <p style={{fontSize:12,color:"#475569",lineHeight:1.6}}>
                 {lang==="ru"
                   ?"Ваш рацион хорошо питает полезную микрофлору. Продолжайте включать разнообразные овощи, ферментированные продукты и клетчатку."
                   :"Your diet is well-nourishing beneficial microflora. Continue including diverse vegetables, fermented foods and fiber."}
@@ -1445,7 +1445,7 @@ function RecommendationsTab({log,mb,t,lang,baseline}){
                       <div style={{fontSize:14,fontWeight:600,color:b.color,marginBottom:2}}>
                         {lang==="ru"?b.ru:b.en}
                       </div>
-                      <div style={{fontSize:10,color:"#4a5568",fontFamily:"'Space Mono',monospace"}}>{b.lat}</div>
+                      <div style={{fontSize:10,color:"#64748b",fontFamily:"'Space Mono',monospace"}}>{b.lat}</div>
                     </div>
                     <div style={{textAlign:"right"}}>
                       <div style={{fontSize:18,fontWeight:700,color:b.color,fontFamily:"'Space Mono',monospace"}}>
@@ -1456,7 +1456,7 @@ function RecommendationsTab({log,mb,t,lang,baseline}){
                       </div>
                     </div>
                   </div>
-                  <p style={{fontSize:12,color:"#8892b0",marginBottom:12,lineHeight:1.5}}>
+                  <p style={{fontSize:12,color:"#475569",marginBottom:12,lineHeight:1.5}}>
                     {lang==="ru"?b.desc_ru:b.desc_en}
                   </p>
                   {supFoods.length>0&&(
@@ -1473,8 +1473,8 @@ function RecommendationsTab({log,mb,t,lang,baseline}){
                           }}>
                             <span style={{fontSize:14}}>{f.ic}</span>
                             <div>
-                              <div style={{fontSize:12,color:"#ccd6f6",fontWeight:500}}>{name(f)}</div>
-                              <div style={{fontSize:9,color:"#4a5568",fontFamily:"'Space Mono',monospace"}}>
+                              <div style={{fontSize:12,color:"#1e293b",fontWeight:500}}>{name(f)}</div>
+                              <div style={{fontSize:9,color:"#64748b",fontFamily:"'Space Mono',monospace"}}>
                                 pre:{f.pre} {f.pro?"🔬":""}
                               </div>
                             </div>
@@ -1511,11 +1511,11 @@ function RecommendationsTab({log,mb,t,lang,baseline}){
                 :["🚫","Limit","Sugar, alcohol, fast food — suppress all beneficial bacteria"],
             ].map(([ic,label,desc])=>(
               <div key={label} style={{display:"flex",gap:10,marginBottom:10,paddingBottom:10,
-                borderBottom:"1px solid rgba(100,255,218,0.05)"}}>
+                borderBottom:"1px solid rgba(13,148,136,0.06)"}}>
                 <span style={{fontSize:18,flexShrink:0}}>{ic}</span>
                 <div>
-                  <div style={{fontSize:12,fontWeight:600,color:"#ccd6f6",marginBottom:2}}>{label}</div>
-                  <div style={{fontSize:11,color:"#8892b0",lineHeight:1.5}}>{desc}</div>
+                  <div style={{fontSize:12,fontWeight:600,color:"#1e293b",marginBottom:2}}>{label}</div>
+                  <div style={{fontSize:11,color:"#475569",lineHeight:1.5}}>{desc}</div>
                 </div>
               </div>
             ))}
@@ -1572,8 +1572,8 @@ function SymptomsTab({t,lang}){
       {/* Header */}
       <div style={{marginBottom:24,display:"flex",alignItems:"flex-start",justifyContent:"space-between",flexWrap:"wrap",gap:12}}>
         <div>
-          <h2 style={{fontSize:20,fontWeight:700,color:"#ccd6f6",marginBottom:4}}>{t.symTitle}</h2>
-          <p style={{fontSize:13,color:"#4a5568"}}>{t.symSub}</p>
+          <h2 style={{fontSize:20,fontWeight:700,color:"#1e293b",marginBottom:4}}>{t.symTitle}</h2>
+          <p style={{fontSize:13,color:"#64748b"}}>{t.symSub}</p>
         </div>
         {selected.size>0&&(
           <button className="mv-btn mv-btn-ghost" onClick={()=>setSelected(new Set())}>
@@ -1593,10 +1593,10 @@ function SymptomsTab({t,lang}){
                 borderRadius:10,fontFamily:"'DM Sans',sans-serif",
                 fontSize:13,fontWeight:500,transition:"all .2s",
                 display:"flex",alignItems:"center",gap:8,
-                background:on?"rgba(100,255,218,0.12)":"rgba(10,22,40,0.8)",
-                border:`1px solid ${on?"rgba(100,255,218,0.45)":"rgba(100,255,218,0.1)"}`,
-                color:on?"#64ffda":"#8892b0",
-                boxShadow:on?"0 0 12px rgba(100,255,218,0.1)":"none",
+                background:on?"rgba(13,148,136,0.12)":"rgba(10,22,40,0.8)",
+                border:`1px solid ${on?"rgba(13,148,136,0.7)":"rgba(13,148,136,0.12)"}`,
+                color:on?"#64ffda":"#475569",
+                boxShadow:on?"0 0 12px rgba(13,148,136,0.12)":"none",
               }}>
               <span style={{fontSize:16}}>{s.ic}</span>
               <span>{sname(s)}</span>
@@ -1608,7 +1608,7 @@ function SymptomsTab({t,lang}){
 
       {/* Empty state */}
       {!analysis&&(
-        <div style={{textAlign:"center",padding:"48px 0",color:"#3d5166"}}>
+        <div style={{textAlign:"center",padding:"48px 0",color:"#94a3b8"}}>
           <div style={{fontSize:52,marginBottom:12,opacity:.5}}>🩺</div>
           <div style={{fontSize:14}}>{t.symNone}</div>
         </div>
@@ -1621,12 +1621,12 @@ function SymptomsTab({t,lang}){
           <div style={{display:"flex",flexWrap:"wrap",gap:12,marginBottom:20}}>
             {analysis.active.map(s=>(
               <div key={s.id} className="mv-card" style={{flex:"1 1 280px",
-                borderColor:"rgba(100,255,218,0.2)",background:"rgba(100,255,218,0.04)"}}>
+                borderColor:"rgba(13,148,136,0.25)",background:"rgba(13,148,136,0.05)"}}>
                 <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:6}}>
                   <span style={{fontSize:20}}>{s.ic}</span>
                   <span style={{fontSize:14,fontWeight:600,color:"#64ffda"}}>{sname(s)}</span>
                 </div>
-                <p style={{fontSize:12,color:"#8892b0",lineHeight:1.6,marginBottom:0}}>
+                <p style={{fontSize:12,color:"#475569",lineHeight:1.6,marginBottom:0}}>
                   {lang==="ru"?s.tip_ru:s.tip_en}
                 </p>
               </div>
@@ -1635,7 +1635,7 @@ function SymptomsTab({t,lang}){
 
           {/* Bacteria status */}
           <div className="mv-card" style={{marginBottom:20}}>
-            <div style={{fontSize:11,color:"rgba(100,255,218,0.6)",fontFamily:"'Space Mono',monospace",
+            <div style={{fontSize:11,color:"rgba(13,148,136,0.9)",fontFamily:"'Space Mono',monospace",
               letterSpacing:"0.08em",textTransform:"uppercase",marginBottom:12}}>
               {t.symAffect}
             </div>
@@ -1690,21 +1690,21 @@ function SymptomsTab({t,lang}){
 
             {/* Foods to eat */}
             <div style={{flex:1,minWidth:0}}>
-              <div style={{fontSize:12,color:"rgba(100,255,218,0.6)",fontFamily:"'Space Mono',monospace",
+              <div style={{fontSize:12,color:"rgba(13,148,136,0.9)",fontFamily:"'Space Mono',monospace",
                 letterSpacing:"0.08em",textTransform:"uppercase",marginBottom:12,
-                paddingBottom:6,borderBottom:"1px solid rgba(100,255,218,0.12)"}}>
+                paddingBottom:6,borderBottom:"1px solid rgba(13,148,136,0.12)"}}>
                 ✓ {t.symEat}
               </div>
               <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8}}>
                 {analysis.eatFoods.map(f=>(
                   <div key={f.id} style={{
-                    padding:"10px 12px",background:"rgba(100,255,218,0.04)",
-                    border:"1px solid rgba(100,255,218,0.12)",borderRadius:10,
+                    padding:"10px 12px",background:"rgba(13,148,136,0.05)",
+                    border:"1px solid rgba(13,148,136,0.12)",borderRadius:10,
                     display:"flex",alignItems:"flex-start",gap:8,
                   }}>
                     <span style={{fontSize:18,flexShrink:0}}>{f.ic}</span>
                     <div style={{minWidth:0}}>
-                      <div style={{fontSize:12,fontWeight:600,color:"#ccd6f6",
+                      <div style={{fontSize:12,fontWeight:600,color:"#1e293b",
                         whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{name(f)}</div>
                       <div style={{display:"flex",gap:4,marginTop:3,flexWrap:"wrap"}}>
                         {f.pre>=7&&<span className="tag tag-green">PRE {f.pre}</span>}
@@ -1733,8 +1733,8 @@ function SymptomsTab({t,lang}){
                   }}>
                     <span style={{fontSize:16}}>{f.ic}</span>
                     <div style={{flex:1}}>
-                      <div style={{fontSize:12,fontWeight:500,color:"#ccd6f6"}}>{name(f)}</div>
-                      <div style={{fontSize:10,color:"#4a5568",marginTop:1}}>
+                      <div style={{fontSize:12,fontWeight:500,color:"#1e293b"}}>{name(f)}</div>
+                      <div style={{fontSize:10,color:"#64748b",marginTop:1}}>
                         {f.cal} kcal · {f.c}g carbs
                       </div>
                     </div>
@@ -1794,8 +1794,8 @@ export default function App(){
       minHeight:"100vh",
       position:"relative",
       backgroundImage:`
-        linear-gradient(rgba(0,210,255,0.018) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(0,210,255,0.018) 1px, transparent 1px)
+        linear-gradient(rgba(13,148,136,0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(13,148,136,0.05) 1px, transparent 1px)
       `,
       backgroundSize:"52px 52px",
     }}>
@@ -1804,8 +1804,8 @@ export default function App(){
       {/* ── HEADER ── */}
       <header style={{
         position:"sticky",top:0,zIndex:100,
-        borderBottom:"1px solid rgba(100,255,218,0.1)",
-        background:"rgba(2,12,27,0.92)",
+        borderBottom:"1px solid rgba(13,148,136,0.12)",
+        background:"rgba(255,255,255,0.96)",
         backdropFilter:"blur(16px)",
         padding:"0 20px",
         display:"flex",alignItems:"center",gap:12,height:60,
@@ -1814,17 +1814,17 @@ export default function App(){
         <div style={{display:"flex",alignItems:"center",gap:10,flexShrink:0}}>
           <div style={{
             width:36,height:36,borderRadius:"50%",flexShrink:0,
-            background:"radial-gradient(circle, rgba(100,255,218,0.25), rgba(0,212,255,0.08))",
+            background:"radial-gradient(circle, rgba(13,148,136,0.12), rgba(8,145,178,0.05))",
             border:"1px solid rgba(100,255,218,0.3)",
             display:"flex",alignItems:"center",justifyContent:"center",fontSize:17,
-            boxShadow:"0 0 20px rgba(100,255,218,0.15)",
+            boxShadow:"0 0 20px rgba(13,148,136,0.18)",
           }}>🧫</div>
           <div>
             <div style={{fontFamily:"'Space Mono',monospace",fontWeight:700,fontSize:15,
-              color:"#64ffda",letterSpacing:"-0.02em",textShadow:"0 0 20px rgba(100,255,218,0.5)"}}>
+              color:"#0d9488",letterSpacing:"-0.02em"}}>
               {t.title}
             </div>
-            <div style={{fontSize:9,color:"#2d4a6e",fontFamily:"'Space Mono',monospace",letterSpacing:"0.12em"}}>
+            <div style={{fontSize:9,color:"#94a3b8",fontFamily:"'Space Mono',monospace",letterSpacing:"0.12em"}}>
               {t.sub}
             </div>
           </div>
@@ -1853,9 +1853,9 @@ export default function App(){
             onChange={e=>setAge(Math.max(1,Math.min(100,Number(e.target.value)||30)))}
             style={{
               width:52,padding:"4px 8px",textAlign:"center",
-              background:"rgba(15,32,64,0.8)",
-              border:"1px solid rgba(100,255,218,0.15)",
-              borderRadius:6,color:"#ccd6f6",
+              background:"#f0fdf9",
+              border:"1px solid rgba(13,148,136,0.18)",
+              borderRadius:6,color:"#1e293b",
               fontFamily:"'Space Mono',monospace",fontSize:12,
               outline:"none",
             }}
@@ -1867,12 +1867,11 @@ export default function App(){
           {["ru","en"].map(l=>(
             <button key={l} className="mv-btn"
               style={{
-                background:lang===l?"rgba(100,255,218,0.12)":"transparent",
-                color:lang===l?"#64ffda":"#3d5166",
-                border:`1px solid ${lang===l?"rgba(100,255,218,0.3)":"transparent"}`,
+                background:lang===l?"rgba(13,148,136,0.1)":"transparent",
+                color:lang===l?"#0d9488":"#94a3b8",
+                border:`1px solid ${lang===l?"rgba(13,148,136,0.3)":"transparent"}`,
                 padding:"5px 10px",fontFamily:"'Space Mono',monospace",
                 fontSize:11,fontWeight:700,letterSpacing:"0.05em",
-                boxShadow:lang===l?"0 0 12px rgba(100,255,218,0.1)":"none",
               }}
               onClick={()=>setLang(l)}>
               {l.toUpperCase()}
@@ -1894,13 +1893,13 @@ export default function App(){
         borderTop:"1px solid rgba(100,255,218,0.06)",
         padding:"14px 24px",
         display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:8,
-        background:"rgba(2,12,27,0.6)",
+        background:"rgba(240,249,245,0.95)",
         position:"relative",zIndex:1,
       }}>
-        <div style={{fontSize:11,color:"#2d4a6e",fontFamily:"'Space Mono',monospace"}}>
+        <div style={{fontSize:11,color:"#94a3b8",fontFamily:"'Space Mono',monospace"}}>
           MicroVerse: Gut & Food Lab · v1.0 · 2026
         </div>
-        <div style={{fontSize:11,color:"#2d4a6e"}}>
+        <div style={{fontSize:11,color:"#94a3b8"}}>
           {lang==="ru"
             ?"Только для образовательных целей. Не является медицинским советом."
             :"For educational purposes only. Not medical advice."}
