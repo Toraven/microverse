@@ -1,4 +1,5 @@
 import { useState, useMemo, useCallback, useEffect, useRef } from "react";
+import { MEDIA, SAMPLE_TYPES, MEDIA_TYPES, PRIORITY_LABELS, ATMOS_LABELS } from "./data/media.js";
 
 // ============================================================
 // GLOBAL STYLES — Fresh Lab (light theme)
@@ -13,7 +14,7 @@ import { useState, useMemo, useCallback, useEffect, useRef } from "react";
   s.id = "mv-global";
   s.textContent = `
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body { background:#f0f9f5; color:#1e293b; font-family:'DM Sans',sans-serif; overflow-x:hidden; }
+    body { background:#8fd8cc; color:#1e293b; font-family:'DM Sans',sans-serif; overflow-x:hidden; }
     #root { min-height:100vh; }
     ::-webkit-scrollbar { width:4px; height:4px; }
     ::-webkit-scrollbar-track { background:#e2f4ee; }
@@ -43,11 +44,11 @@ import { useState, useMemo, useCallback, useEffect, useRef } from "react";
     @keyframes barGrow { from{width:0} to{width:var(--w)} }
 
     .mv-card {
-      background:#ffffff;
-      border:1px solid rgba(13,148,136,.13);
+      background:linear-gradient(135deg,#d4f5ef 0%,#c2f0e8 100%);
+      border:1px solid rgba(13,148,136,.3);
       border-radius:12px;
       padding:16px;
-      box-shadow:0 2px 12px rgba(13,148,136,.07);
+      box-shadow:0 4px 16px rgba(13,148,136,.15);
     }
     .mv-btn {
       cursor:pointer; border:none; border-radius:8px;
@@ -63,18 +64,18 @@ import { useState, useMemo, useCallback, useEffect, useRef } from "react";
     .mv-btn-danger { background:rgba(248,113,113,.08); color:#dc2626; border:1px solid rgba(248,113,113,.2); }
     .mv-btn-danger:hover { background:rgba(248,113,113,.15); }
     .mv-input {
-      background:#f8fffd; border:1px solid rgba(13,148,136,.2);
-      border-radius:8px; color:#1e293b;
+      background:rgba(255,255,255,0.6); border:1px solid rgba(13,148,136,.3);
+      border-radius:8px; color:#134e4a;
       font-family:'DM Sans',sans-serif; font-size:14px;
       padding:10px 14px; outline:none; transition:border-color .2s,box-shadow .2s; width:100%;
     }
-    .mv-input:focus { border-color:#0d9488; box-shadow:0 0 0 3px rgba(13,148,136,.12); }
-    .mv-input::placeholder { color:#94a3b8; }
+    .mv-input:focus { border-color:#0d9488; box-shadow:0 0 0 3px rgba(13,148,136,.18); }
+    .mv-input::placeholder { color:#5eada3; }
     .mv-tab { cursor:pointer; padding:10px 18px; font-weight:500; font-size:14px; color:#64748b; border-bottom:2px solid transparent; transition:all .2s; white-space:nowrap; background:none; border-top:none; border-left:none; border-right:none; font-family:'DM Sans',sans-serif; }
     .mv-tab:hover { color:#0d9488; }
     .mv-tab.active { color:#0d9488; border-bottom-color:#0d9488; }
     .food-enter { animation:slideIn .3s ease both; }
-    .dropdown { position:absolute; top:calc(100% + 4px); left:0; right:0; background:#ffffff; border:1px solid rgba(13,148,136,.18); border-radius:10px; max-height:260px; overflow-y:auto; z-index:200; box-shadow:0 8px 32px rgba(13,148,136,.12); }
+    .dropdown { position:absolute; top:calc(100% + 4px); left:0; right:0; background:linear-gradient(135deg,#d4f5ef,#c2f0e8); border:1px solid rgba(13,148,136,.3); border-radius:10px; max-height:260px; overflow-y:auto; z-index:200; box-shadow:0 8px 32px rgba(13,148,136,.2); }
     .dropdown-item { padding:10px 14px; cursor:pointer; transition:background .15s; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(13,148,136,.07); }
     .dropdown-item:last-child { border-bottom:none; }
     .dropdown-item:hover, .dropdown-item.hi { background:rgba(13,148,136,.06); }
@@ -435,7 +436,7 @@ function getBaselineByAge(age){
 const T = {
   ru:{
     title:"MicroVerse", sub:"GUT & FOOD LAB",
-    tabs:["Калькулятор","Дневник 24ч","Рекомендации","Симптомы"],
+    tabs:["Калькулятор","Дневник 24ч","Рекомендации","Симптомы","МедиаЛаб"],
     search:"Введите продукт...", addBtn:"Добавить", amtLabel:"Количество (г)",
     yourDiet:"Ваш рацион", noFoods:"Добавьте продукты чтобы увидеть анализ",
     nutTitle:"Питательная ценность", kcal:"ккал", g:"г",
@@ -477,10 +478,43 @@ const T = {
     symHigh:"Повышены:",
     symTip:"Что происходит:",
     symClear:"Сбросить",
+    // MediaLab
+    mediaTitle:"МедиаЛаб",
+    mediaSub:"Подбор питательных сред по патогену или типу образца",
+    mediaSearch:"Патоген, образец или название среды...",
+    mediaAll:"Все",
+    mediaNoResults:"По вашему запросу среды не найдены",
+    mediaClear:"Сбросить",
+    mediaBack:"← Назад",
+    mediaTargets:"Целевые микроорганизмы",
+    mediaIncub:"Инкубация",
+    mediaTemp:"Темп.",
+    mediaTime:"Время",
+    mediaAtmos:"Атмосфера",
+    mediaColony:"Морфология колоний",
+    mediaUse:"Применение",
+    mediaResistance:"Маркеры резистентности",
+    mediaSelectivity:"Селективность",
+    mediaPriority:"Приоритет",
+    mediaProtocol:"Протокол",
+    mediaSampleFilter:"Тип образца",
+    mediaTypeFilter:"Тип среды",
+    mediaCount:"сред найдено",
+    mediaProtocolBtn:"Протокол посева",
+    mediaProtocolHint:"Выберите клинический сценарий",
+    mediaPrimary:"Первичные",
+    mediaConfirmatory:"Подтверждающие",
+    mediaAmrScreen:"AMR-скрининг",
+    mediaProtoUTI:"ИМП",
+    mediaProtoSepsis:"Сепсис",
+    mediaProtoGI:"Кишечная инфекция",
+    mediaProtoWound:"Рана",
+    mediaProtoResp:"Дых. пути",
+    mediaArticle:"Артикул",
   },
   en:{
     title:"MicroVerse", sub:"GUT & FOOD LAB",
-    tabs:["Calculator","24h Diary","Recommendations","Symptoms"],
+    tabs:["Calculator","24h Diary","Recommendations","Symptoms","MediaLab"],
     search:"Search food...", addBtn:"Add", amtLabel:"Amount (g)",
     yourDiet:"Your Diet", noFoods:"Add foods to see the analysis",
     nutTitle:"Nutrition Facts", kcal:"kcal", g:"g",
@@ -522,6 +556,39 @@ const T = {
     symHigh:"High:",
     symTip:"What's happening:",
     symClear:"Reset",
+    // MediaLab
+    mediaTitle:"MediaLab",
+    mediaSub:"Select culture media by pathogen or specimen type",
+    mediaSearch:"Pathogen, specimen or medium name...",
+    mediaAll:"All",
+    mediaNoResults:"No media found for your query",
+    mediaClear:"Reset",
+    mediaBack:"← Back",
+    mediaTargets:"Target organisms",
+    mediaIncub:"Incubation",
+    mediaTemp:"Temp.",
+    mediaTime:"Time",
+    mediaAtmos:"Atmosphere",
+    mediaColony:"Colony morphology",
+    mediaUse:"Application",
+    mediaResistance:"Resistance markers",
+    mediaSelectivity:"Selectivity",
+    mediaPriority:"Priority",
+    mediaProtocol:"Protocol",
+    mediaSampleFilter:"Specimen type",
+    mediaTypeFilter:"Medium type",
+    mediaCount:"media found",
+    mediaProtocolBtn:"Seeding Protocol",
+    mediaProtocolHint:"Select a clinical scenario",
+    mediaPrimary:"Primary",
+    mediaConfirmatory:"Confirmatory",
+    mediaAmrScreen:"AMR screening",
+    mediaProtoUTI:"UTI",
+    mediaProtoSepsis:"Sepsis",
+    mediaProtoGI:"GI infection",
+    mediaProtoWound:"Wound",
+    mediaProtoResp:"Respiratory",
+    mediaArticle:"Article",
   }
 };
 
@@ -780,7 +847,7 @@ function FoodSearch({lang,t,onAdd}){
               <div key={f.id} className={`dropdown-item${hi===i?" hi":""}`}
                 onMouseDown={()=>pick(f)} onMouseEnter={()=>setHi(i)}>
                 <div style={{display:"flex",alignItems:"center",gap:8}}>
-                  <span style={{fontSize:16}}>{f.ic}</span>
+                  <span style={{fontSize:20}}>{f.ic}</span>
                   <div>
                     <div style={{fontSize:13,color:"#1e293b",fontWeight:500}}>{name(f)}</div>
                     <div style={{fontSize:10,color:"#64748b",marginTop:1}}>
@@ -858,7 +925,7 @@ function FoodLog({log,t,lang,onRemove,onClear}){
           display:"flex",alignItems:"center",gap:8,padding:"8px 0",
           borderBottom:"1px solid rgba(100,255,218,0.06)",
         }}>
-          <span style={{fontSize:16,flexShrink:0}}>{f.ic}</span>
+          <span style={{fontSize:20,flexShrink:0}}>{f.ic}</span>
           <div style={{flex:1,minWidth:0}}>
             <div style={{fontSize:13,fontWeight:500,color:"#1e293b",
               whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{name(f)}</div>
@@ -973,7 +1040,7 @@ function BacteriaPanel({mb,t,lang,baseline}){
   const Section=({title,items,col})=>(
     <div style={{marginBottom:12}}>
       <div style={{fontSize:10,color:col,fontFamily:"'Space Mono',monospace",letterSpacing:"0.08em",
-        textTransform:"uppercase",marginBottom:6,paddingBottom:4,
+        textTransform:"uppercase",marginBottom:6,paddingBottom:4,fontWeight:700,
         borderBottom:`1px solid rgba(${hexToRgb(col)},0.2)`}}>
         {title}
       </div>
@@ -983,9 +1050,9 @@ function BacteriaPanel({mb,t,lang,baseline}){
 
   return(
     <div>
-      <Section title={t.role_good} items={good} col="#64ffda"/>
-      <Section title={t.role_neutral} items={neutral} col="#fbbf24"/>
-      <Section title={t.role_bad} items={bad} col="#f87171"/>
+      <Section title={t.role_good} items={good} col="#0d9488"/>
+      <Section title={t.role_neutral} items={neutral} col="#d97706"/>
+      <Section title={t.role_bad} items={bad} col="#dc2626"/>
     </div>
   );
 }
@@ -1054,7 +1121,7 @@ function CalculatorTab({log,mb,setLog,t,lang,baseline}){
 
         {/* Search card */}
         <div className="mv-card">
-          <div style={{fontSize:11,color:"rgba(13,148,136,0.9)",fontFamily:"'Space Mono',monospace",
+          <div style={{fontSize:11,color:"#0d9488",fontWeight:700,fontFamily:"'Space Mono',monospace",
             letterSpacing:"0.08em",textTransform:"uppercase",marginBottom:10}}>
             ＋ {lang==="ru"?"Добавить продукт":"Add Food"}
           </div>
@@ -1064,7 +1131,7 @@ function CalculatorTab({log,mb,setLog,t,lang,baseline}){
         {/* Diet log */}
         <div className="mv-card">
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10}}>
-            <div style={{fontSize:11,color:"rgba(13,148,136,0.9)",fontFamily:"'Space Mono',monospace",
+            <div style={{fontSize:11,color:"#0d9488",fontWeight:700,fontFamily:"'Space Mono',monospace",
               letterSpacing:"0.08em",textTransform:"uppercase"}}>
               {t.yourDiet}
             </div>
@@ -1078,7 +1145,7 @@ function CalculatorTab({log,mb,setLog,t,lang,baseline}){
         {/* Nutrition summary */}
         {log.length>0&&(
           <div className="mv-card" style={{animation:"fadeUp .3s ease"}}>
-            <div style={{fontSize:11,color:"rgba(13,148,136,0.9)",fontFamily:"'Space Mono',monospace",
+            <div style={{fontSize:11,color:"#0d9488",fontWeight:700,fontFamily:"'Space Mono',monospace",
               letterSpacing:"0.08em",textTransform:"uppercase",marginBottom:10}}>
               {t.nutTitle} · {t.total}
             </div>
@@ -1095,7 +1162,7 @@ function CalculatorTab({log,mb,setLog,t,lang,baseline}){
 
         {/* Health ring + score */}
         <div className="mv-card">
-          <div style={{fontSize:11,color:"rgba(13,148,136,0.9)",fontFamily:"'Space Mono',monospace",
+          <div style={{fontSize:11,color:"#0d9488",fontWeight:700,fontFamily:"'Space Mono',monospace",
             letterSpacing:"0.08em",textTransform:"uppercase",marginBottom:12}}>
             {t.micro}
           </div>
@@ -1109,7 +1176,7 @@ function CalculatorTab({log,mb,setLog,t,lang,baseline}){
 
         {/* Bacteria panel */}
         <div className="mv-card">
-          <div style={{fontSize:11,color:"rgba(13,148,136,0.9)",fontFamily:"'Space Mono',monospace",
+          <div style={{fontSize:11,color:"#0d9488",fontWeight:700,fontFamily:"'Space Mono',monospace",
             letterSpacing:"0.08em",textTransform:"uppercase",marginBottom:10}}>
             {t.bacteriaTitle}
           </div>
@@ -1195,7 +1262,7 @@ function DiaryTab({t,lang,baseline}){
       <div className="two-col" style={{display:"flex",gap:20,alignItems:"flex-start"}}>
         <div style={{flex:"0 0 360px",minWidth:280,display:"flex",flexDirection:"column",gap:14}}>
           <div className="mv-card">
-            <div style={{fontSize:11,marginBottom:10,color:`rgba(${hexToRgb(mealColors[activeMeal])},0.8)`,
+            <div style={{fontSize:11,marginBottom:10,color:mealColors[activeMeal],fontWeight:700,
               fontFamily:"'Space Mono',monospace",letterSpacing:"0.07em",textTransform:"uppercase"}}>
               {t.mealShort[activeMeal]}
             </div>
@@ -1212,7 +1279,7 @@ function DiaryTab({t,lang,baseline}){
               meals[activeMeal].map(({id,food:f,amount})=>(
                 <div key={id} className="food-enter" style={{display:"flex",alignItems:"center",gap:8,
                   padding:"7px 0",borderBottom:"1px solid rgba(13,148,136,0.06)"}}>
-                  <span style={{fontSize:16}}>{f.ic}</span>
+                  <span style={{fontSize:20}}>{f.ic}</span>
                   <div style={{flex:1,minWidth:0}}>
                     <div style={{fontSize:13,color:"#1e293b",fontWeight:500,
                       whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{name(f)}</div>
@@ -1229,7 +1296,7 @@ function DiaryTab({t,lang,baseline}){
         <div style={{flex:1,minWidth:0,display:"flex",flexDirection:"column",gap:14}}>
           {/* Timeline progress */}
           <div className="mv-card">
-            <div style={{fontSize:11,color:"rgba(13,148,136,0.9)",fontFamily:"'Space Mono',monospace",
+            <div style={{fontSize:11,color:"#0d9488",fontWeight:700,fontFamily:"'Space Mono',monospace",
               letterSpacing:"0.08em",textTransform:"uppercase",marginBottom:16}}>
               {lang==="ru"?"Прогресс дня":"Day Progress"}
             </div>
@@ -1266,7 +1333,7 @@ function DiaryTab({t,lang,baseline}){
                 <MicrobiomeViz mb={totalMb} lang={lang}/>
               </div>
               <div className="mv-card">
-                <div style={{fontSize:11,color:"rgba(13,148,136,0.9)",fontFamily:"'Space Mono',monospace",
+                <div style={{fontSize:11,color:"#0d9488",fontWeight:700,fontFamily:"'Space Mono',monospace",
                   letterSpacing:"0.08em",textTransform:"uppercase",marginBottom:10}}>
                   {t.bacteriaTitle}
                 </div>
@@ -1359,7 +1426,7 @@ function RecommendationsTab({log,mb,t,lang,baseline}){
         <div style={{flex:1,minWidth:0}}>
           {analysis.deficient.length>0&&(
             <>
-              <div style={{fontSize:12,color:"rgba(13,148,136,0.9)",fontFamily:"'Space Mono',monospace",
+              <div style={{fontSize:12,color:"#0d9488",fontWeight:700,fontFamily:"'Space Mono',monospace",
                 letterSpacing:"0.08em",textTransform:"uppercase",marginBottom:12,
                 paddingBottom:6,borderBottom:"1px solid rgba(13,148,136,0.12)"}}>
                 ↓ {t.defTitle}
@@ -1386,7 +1453,7 @@ function RecommendationsTab({log,mb,t,lang,baseline}){
                   <p style={{fontSize:12,color:"#475569",marginBottom:12,lineHeight:1.5}}>
                     {lang==="ru"?b.desc_ru:b.desc_en}
                   </p>
-                  <div style={{fontSize:11,color:"rgba(13,148,136,0.8)",marginBottom:8,fontWeight:600,textTransform:"uppercase",letterSpacing:"0.05em"}}>
+                  <div style={{fontSize:11,color:"#0d9488",marginBottom:8,fontWeight:700,textTransform:"uppercase",letterSpacing:"0.05em"}}>
                     {t.recAdd}
                   </div>
                   <div style={{display:"flex",flexWrap:"wrap",gap:8}}>
@@ -1396,7 +1463,7 @@ function RecommendationsTab({log,mb,t,lang,baseline}){
                         border:"1px solid rgba(13,148,136,0.18)",borderRadius:8,
                         display:"flex",alignItems:"center",gap:6,
                       }}>
-                        <span style={{fontSize:14}}>{f.ic}</span>
+                        <span style={{fontSize:18}}>{f.ic}</span>
                         <div>
                           <div style={{fontSize:12,color:"#1e293b",fontWeight:500}}>{name(f)}</div>
                           <div style={{fontSize:9,color:"#64748b",fontFamily:"'Space Mono',monospace"}}>
@@ -1431,7 +1498,7 @@ function RecommendationsTab({log,mb,t,lang,baseline}){
         <div style={{flex:1,minWidth:0}}>
           {analysis.excess.length>0&&(
             <>
-              <div style={{fontSize:12,color:"rgba(248,113,113,0.6)",fontFamily:"'Space Mono',monospace",
+              <div style={{fontSize:12,color:"#dc2626",fontWeight:700,fontFamily:"'Space Mono',monospace",
                 letterSpacing:"0.08em",textTransform:"uppercase",marginBottom:12,
                 paddingBottom:6,borderBottom:"1px solid rgba(248,113,113,0.12)"}}>
                 ↑ {t.exTitle}
@@ -1461,7 +1528,7 @@ function RecommendationsTab({log,mb,t,lang,baseline}){
                   </p>
                   {supFoods.length>0&&(
                     <>
-                      <div style={{fontSize:11,color:"rgba(248,113,113,0.5)",marginBottom:8,fontWeight:600,textTransform:"uppercase",letterSpacing:"0.05em"}}>
+                      <div style={{fontSize:11,color:"#dc2626",marginBottom:8,fontWeight:700,textTransform:"uppercase",letterSpacing:"0.05em"}}>
                         {t.recAdd}
                       </div>
                       <div style={{display:"flex",flexWrap:"wrap",gap:8}}>
@@ -1471,7 +1538,7 @@ function RecommendationsTab({log,mb,t,lang,baseline}){
                             border:"1px solid rgba(248,113,113,0.15)",borderRadius:8,
                             display:"flex",alignItems:"center",gap:6,
                           }}>
-                            <span style={{fontSize:14}}>{f.ic}</span>
+                            <span style={{fontSize:18}}>{f.ic}</span>
                             <div>
                               <div style={{fontSize:12,color:"#1e293b",fontWeight:500}}>{name(f)}</div>
                               <div style={{fontSize:9,color:"#64748b",fontFamily:"'Space Mono',monospace"}}>
@@ -1593,12 +1660,12 @@ function SymptomsTab({t,lang}){
                 borderRadius:10,fontFamily:"'DM Sans',sans-serif",
                 fontSize:13,fontWeight:500,transition:"all .2s",
                 display:"flex",alignItems:"center",gap:8,
-                background:on?"rgba(13,148,136,0.1)":"#ffffff",
-                border:`1px solid ${on?"rgba(13,148,136,0.5)":"rgba(13,148,136,0.15)"}`,
-                color:on?"#0d9488":"#334155",
-                boxShadow:on?"0 0 12px rgba(13,148,136,0.12)":"none",
+                background:"#ffffff",
+                border:on?"2px solid #0891b2":"1px solid rgba(13,148,136,0.15)",
+                color:"#334155",
+                boxShadow:on?"0 0 0 3px rgba(8,145,178,0.15)":"none",
               }}>
-              <span style={{fontSize:16}}>{s.ic}</span>
+              <span style={{fontSize:20}}>{s.ic}</span>
               <span>{sname(s)}</span>
               {on&&<span style={{fontSize:10,opacity:.7}}>✓</span>}
             </button>
@@ -1624,7 +1691,7 @@ function SymptomsTab({t,lang}){
                 borderColor:"rgba(13,148,136,0.25)",background:"rgba(13,148,136,0.05)"}}>
                 <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:6}}>
                   <span style={{fontSize:20}}>{s.ic}</span>
-                  <span style={{fontSize:14,fontWeight:600,color:"#64ffda"}}>{sname(s)}</span>
+                  <span style={{fontSize:14,fontWeight:700,color:"#134e4a",fontFamily:"'Space Mono',monospace"}}>{sname(s)}</span>
                 </div>
                 <p style={{fontSize:12,color:"#475569",lineHeight:1.6,marginBottom:0}}>
                   {lang==="ru"?s.tip_ru:s.tip_en}
@@ -1635,14 +1702,14 @@ function SymptomsTab({t,lang}){
 
           {/* Bacteria status */}
           <div className="mv-card" style={{marginBottom:20}}>
-            <div style={{fontSize:11,color:"rgba(13,148,136,0.9)",fontFamily:"'Space Mono',monospace",
+            <div style={{fontSize:11,color:"#0d9488",fontWeight:700,fontFamily:"'Space Mono',monospace",
               letterSpacing:"0.08em",textTransform:"uppercase",marginBottom:12}}>
               {t.symAffect}
             </div>
             <div style={{display:"flex",flexWrap:"wrap",gap:16}}>
               {analysis.lowBact.length>0&&(
                 <div style={{flex:1,minWidth:200}}>
-                  <div style={{fontSize:11,color:"rgba(248,113,113,0.6)",marginBottom:8,
+                  <div style={{fontSize:11,color:"#dc2626",fontWeight:700,marginBottom:8,
                     fontFamily:"'Space Mono',monospace",textTransform:"uppercase",letterSpacing:"0.06em"}}>
                     ↓ {t.symLow}
                   </div>
@@ -1663,7 +1730,7 @@ function SymptomsTab({t,lang}){
               )}
               {analysis.highBact.length>0&&(
                 <div style={{flex:1,minWidth:200}}>
-                  <div style={{fontSize:11,color:"rgba(251,146,60,0.6)",marginBottom:8,
+                  <div style={{fontSize:11,color:"#d97706",fontWeight:700,marginBottom:8,
                     fontFamily:"'Space Mono',monospace",textTransform:"uppercase",letterSpacing:"0.06em"}}>
                     ↑ {t.symHigh}
                   </div>
@@ -1690,7 +1757,7 @@ function SymptomsTab({t,lang}){
 
             {/* Foods to eat */}
             <div style={{flex:1,minWidth:0}}>
-              <div style={{fontSize:12,color:"rgba(13,148,136,0.9)",fontFamily:"'Space Mono',monospace",
+              <div style={{fontSize:12,color:"#0d9488",fontWeight:700,fontFamily:"'Space Mono',monospace",
                 letterSpacing:"0.08em",textTransform:"uppercase",marginBottom:12,
                 paddingBottom:6,borderBottom:"1px solid rgba(13,148,136,0.12)"}}>
                 ✓ {t.symEat}
@@ -1702,7 +1769,7 @@ function SymptomsTab({t,lang}){
                     border:"1px solid rgba(13,148,136,0.12)",borderRadius:10,
                     display:"flex",alignItems:"flex-start",gap:8,
                   }}>
-                    <span style={{fontSize:18,flexShrink:0}}>{f.ic}</span>
+                    <span style={{fontSize:22,flexShrink:0}}>{f.ic}</span>
                     <div style={{minWidth:0}}>
                       <div style={{fontSize:12,fontWeight:600,color:"#1e293b",
                         whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{name(f)}</div>
@@ -1719,7 +1786,7 @@ function SymptomsTab({t,lang}){
 
             {/* Foods to avoid */}
             <div style={{flex:"0 0 300px",minWidth:260}}>
-              <div style={{fontSize:12,color:"rgba(248,113,113,0.6)",fontFamily:"'Space Mono',monospace",
+              <div style={{fontSize:12,color:"#dc2626",fontWeight:700,fontFamily:"'Space Mono',monospace",
                 letterSpacing:"0.08em",textTransform:"uppercase",marginBottom:12,
                 paddingBottom:6,borderBottom:"1px solid rgba(248,113,113,0.12)"}}>
                 ✗ {t.symAvoid}
@@ -1731,7 +1798,7 @@ function SymptomsTab({t,lang}){
                     border:"1px solid rgba(248,113,113,0.1)",borderRadius:8,
                     display:"flex",alignItems:"center",gap:8,
                   }}>
-                    <span style={{fontSize:16}}>{f.ic}</span>
+                    <span style={{fontSize:20}}>{f.ic}</span>
                     <div style={{flex:1}}>
                       <div style={{fontSize:12,fontWeight:500,color:"#1e293b"}}>{name(f)}</div>
                       <div style={{fontSize:10,color:"#64748b",marginTop:1}}>
@@ -1744,6 +1811,460 @@ function SymptomsTab({t,lang}){
             </div>
 
           </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ============================================================
+// MEDIALAB — CLINICAL PROTOCOLS
+// ============================================================
+const PROTOCOLS=[
+  {id:"uti",   labelKey:"mediaProtoUTI",
+    primary:    ["chrom_uti","cled","brilliance_uti"],
+    confirmatory:["chrom_esbl","brilliance_esbl"],
+    resistance: ["mueller_hinton","mh1"]},
+  {id:"sepsis",labelKey:"mediaProtoSepsis",
+    primary:    ["columbia_blood","chocolate_agar","brain_heart_broth"],
+    confirmatory:["thayer_martin","bcye"],
+    resistance: ["mueller_hinton","chrom_mrsa","chrom_kpc"]},
+  {id:"gi",    labelKey:"mediaProtoGI",
+    primary:    ["macconkey","xld","hektoen_enteric"],
+    confirmatory:["smac","cin_agar","tcbs","bismuth_sulfite"],
+    resistance: ["chrom_esbl","chrom_col_apse"]},
+  {id:"wound", labelKey:"mediaProtoWound",
+    primary:    ["columbia_blood","macconkey","chrom_mrsa"],
+    confirmatory:["chrom_esbl","cna_blood"],
+    resistance: ["mueller_hinton","chrom_supercarba"]},
+  {id:"resp",  labelKey:"mediaProtoResp",
+    primary:    ["columbia_blood","chocolate_agar","chrom_mrsa"],
+    confirmatory:["bordet_gengou","bcye","thayer_martin"],
+    resistance: ["mueller_hinton","mh_horse_nad"]},
+];
+
+// ============================================================
+// MEDIALAB TAB — агент подбора питательных сред
+// ============================================================
+function MediaLabTab({t,lang}){
+  const [query,setQuery]=useState("");
+  const [sampleFilter,setSampleFilter]=useState("all");
+  const [typeFilter,setTypeFilter]=useState("all");
+  const [selected,setSelected]=useState(null);
+  const [protocolMode,setProtocolMode]=useState(false);
+  const [activeScenario,setActiveScenario]=useState("uti");
+
+  const filtered=useMemo(()=>{
+    return MEDIA.filter(m=>{
+      const matchSample=sampleFilter==="all"||m.sample_types.includes(sampleFilter);
+      const matchType=typeFilter==="all"||m.type===typeFilter;
+      if(!matchSample||!matchType)return false;
+      if(!query.trim())return true;
+      const q=query.toLowerCase();
+      return(
+        m.name.toLowerCase().includes(q)||
+        m.name_ru.toLowerCase().includes(q)||
+        m.manufacturer.toLowerCase().includes(q)||
+        m.targets_ru.toLowerCase().includes(q)||
+        m.targets_en.toLowerCase().includes(q)||
+        m.use_ru.toLowerCase().includes(q)||
+        m.use_en.toLowerCase().includes(q)||
+        (m.article||"").toLowerCase().includes(q)
+      );
+    });
+  },[query,sampleFilter,typeFilter]);
+
+  const typeColor=type=>(MEDIA_TYPES.find(m=>m.id===type)||{color:"#94a3b8"}).color;
+  const typeLabel=type=>{
+    const mt=MEDIA_TYPES.find(m=>m.id===type);
+    return mt?(lang==="ru"?mt.ru:mt.en):type;
+  };
+  const prioLabel=p=>{
+    const pl=PRIORITY_LABELS[p];
+    return pl?{label:lang==="ru"?pl.ru:pl.en,color:pl.color}:{label:p,color:"#94a3b8"};
+  };
+  const atmosLabel=a=>{
+    const al=ATMOS_LABELS[a];
+    return al?(lang==="ru"?al.ru:al.en):a;
+  };
+
+  // ── DETAIL VIEW ──
+  if(selected){
+    const m=selected;
+    const prio=prioLabel(m.priority);
+    return(
+      <div style={{animation:"fadeUp .3s ease"}}>
+        <button
+          onClick={()=>setSelected(null)}
+          className="mv-btn mv-btn-ghost"
+          style={{marginBottom:16,fontSize:13,padding:"6px 14px"}}
+        >{t.mediaBack}</button>
+
+        <div className="mv-card" style={{maxWidth:860,margin:"0 auto"}}>
+          {/* Header */}
+          <div style={{display:"flex",alignItems:"flex-start",gap:12,marginBottom:20,flexWrap:"wrap"}}>
+            <div style={{
+              width:48,height:48,borderRadius:12,flexShrink:0,
+              background:`${typeColor(m.type)}22`,
+              border:`1px solid ${typeColor(m.type)}55`,
+              display:"flex",alignItems:"center",justifyContent:"center",fontSize:22,
+            }}>🧫</div>
+            <div style={{flex:1}}>
+              <div style={{fontFamily:"'Space Mono',monospace",fontWeight:700,fontSize:16,color:"#0d9488",marginBottom:4}}>
+                {m.name}
+              </div>
+              <div style={{fontSize:13,color:"#475569",marginBottom:6}}>{m.name_ru}</div>
+              <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
+                <span style={{
+                  background:`${typeColor(m.type)}22`,color:typeColor(m.type),
+                  border:`1px solid ${typeColor(m.type)}44`,
+                  borderRadius:6,padding:"2px 8px",fontSize:11,fontWeight:600,
+                  fontFamily:"'Space Mono',monospace",
+                }}>{typeLabel(m.type)}</span>
+                <span style={{
+                  background:`${prio.color}22`,color:prio.color,
+                  border:`1px solid ${prio.color}44`,
+                  borderRadius:6,padding:"2px 8px",fontSize:11,fontWeight:600,
+                  fontFamily:"'Space Mono',monospace",
+                }}>{prio.label}</span>
+                <span style={{
+                  background:"rgba(148,163,184,0.15)",color:"#64748b",
+                  borderRadius:6,padding:"2px 8px",fontSize:11,
+                }}>📦 {m.manufacturer}</span>
+                {m.article&&<span style={{
+                  background:"rgba(100,255,218,0.08)",color:"#64ffda",
+                  border:"1px solid rgba(100,255,218,0.2)",
+                  borderRadius:6,padding:"2px 8px",fontSize:11,
+                  fontFamily:"'Space Mono',monospace",
+                }}>📄 {t.mediaArticle}: {m.article}</span>}
+              </div>
+            </div>
+          </div>
+
+          {/* Grid info */}
+          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(240px,1fr))",gap:12,marginBottom:16}}>
+            {/* Incubation */}
+            <div style={{background:"rgba(13,148,136,0.06)",borderRadius:10,padding:14,border:"1px solid rgba(13,148,136,0.12)"}}>
+              <div style={{fontSize:10,fontFamily:"'Space Mono',monospace",color:"#0d9488",letterSpacing:"0.1em",marginBottom:10,textTransform:"uppercase"}}>
+                🌡 {t.mediaIncub}
+              </div>
+              <div style={{display:"flex",flexDirection:"column",gap:6}}>
+                <div style={{display:"flex",justifyContent:"space-between",fontSize:13}}>
+                  <span style={{color:"#64748b"}}>{t.mediaTemp}</span>
+                  <span style={{fontFamily:"'Space Mono',monospace",fontWeight:700,color:"#1e293b"}}>{m.incubation.temp}°C</span>
+                </div>
+                <div style={{display:"flex",justifyContent:"space-between",fontSize:13}}>
+                  <span style={{color:"#64748b"}}>{t.mediaTime}</span>
+                  <span style={{fontFamily:"'Space Mono',monospace",fontWeight:700,color:"#1e293b"}}>
+                    {m.incubation.hours_min}–{m.incubation.hours_max}ч
+                  </span>
+                </div>
+                <div style={{display:"flex",justifyContent:"space-between",fontSize:13}}>
+                  <span style={{color:"#64748b"}}>{t.mediaAtmos}</span>
+                  <span style={{fontFamily:"'Space Mono',monospace",fontWeight:600,color:"#1e293b",textAlign:"right",maxWidth:140}}>
+                    {atmosLabel(m.incubation.atmosphere)}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Targets */}
+            <div style={{background:"rgba(167,139,250,0.06)",borderRadius:10,padding:14,border:"1px solid rgba(167,139,250,0.15)"}}>
+              <div style={{fontSize:10,fontFamily:"'Space Mono',monospace",color:"#a78bfa",letterSpacing:"0.1em",marginBottom:8,textTransform:"uppercase"}}>
+                🦠 {t.mediaTargets}
+              </div>
+              <div style={{fontSize:12,color:"#475569",lineHeight:1.6,fontStyle:"italic"}}>
+                {lang==="ru"?m.targets_ru:m.targets_en}
+              </div>
+            </div>
+          </div>
+
+          {/* Colony morphology */}
+          <div style={{background:"rgba(251,146,60,0.06)",borderRadius:10,padding:14,marginBottom:12,border:"1px solid rgba(251,146,60,0.15)"}}>
+            <div style={{fontSize:10,fontFamily:"'Space Mono',monospace",color:"#fb923c",letterSpacing:"0.1em",marginBottom:8,textTransform:"uppercase"}}>
+              🔬 {t.mediaColony}
+            </div>
+            <div style={{fontSize:13,color:"#334155",lineHeight:1.65}}>
+              {lang==="ru"?m.colony_ru:m.colony_en}
+            </div>
+          </div>
+
+          {/* Application */}
+          <div style={{background:"rgba(8,145,178,0.06)",borderRadius:10,padding:14,marginBottom:12,border:"1px solid rgba(8,145,178,0.15)"}}>
+            <div style={{fontSize:10,fontFamily:"'Space Mono',monospace",color:"#0891b2",letterSpacing:"0.1em",marginBottom:8,textTransform:"uppercase"}}>
+              🏥 {t.mediaUse}
+            </div>
+            <div style={{fontSize:13,color:"#334155",lineHeight:1.65}}>
+              {lang==="ru"?m.use_ru:m.use_en}
+            </div>
+          </div>
+
+          {/* Resistance markers */}
+          {m.resistance_markers.length>0&&(
+            <div style={{background:"rgba(248,113,113,0.06)",borderRadius:10,padding:14,border:"1px solid rgba(248,113,113,0.15)"}}>
+              <div style={{fontSize:10,fontFamily:"'Space Mono',monospace",color:"#f87171",letterSpacing:"0.1em",marginBottom:10,textTransform:"uppercase"}}>
+                💊 {t.mediaResistance}
+              </div>
+              <div style={{display:"flex",flexWrap:"wrap",gap:6}}>
+                {m.resistance_markers.map((rm,i)=>(
+                  <span key={i} style={{
+                    background:"rgba(248,113,113,0.1)",color:"#dc2626",
+                    border:"1px solid rgba(248,113,113,0.25)",
+                    borderRadius:6,padding:"3px 10px",fontSize:12,
+                  }}>{rm}</span>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  // ── LIST VIEW ──
+  return(
+    <div style={{animation:"fadeUp .3s ease"}}>
+      {/* Title */}
+      <div style={{marginBottom:20,textAlign:"center"}}>
+        <div style={{fontFamily:"'Space Mono',monospace",fontWeight:700,fontSize:20,color:"#0d9488",marginBottom:4}}>
+          🧫 {t.mediaTitle}
+        </div>
+        <div style={{fontSize:13,color:"#64748b"}}>{t.mediaSub}</div>
+      </div>
+
+      {/* Search */}
+      <div style={{maxWidth:600,margin:"0 auto 16px"}}>
+        <input
+          className="mv-input"
+          placeholder={t.mediaSearch}
+          value={query}
+          onChange={e=>setQuery(e.target.value)}
+          style={{width:"100%",fontSize:14,padding:"10px 16px"}}
+        />
+      </div>
+
+      {/* Protocol toggle */}
+      <div style={{maxWidth:600,margin:"0 auto 16px",textAlign:"right"}}>
+        <button className="mv-btn"
+          onClick={()=>setProtocolMode(v=>!v)}
+          style={{
+            background:protocolMode?"rgba(13,148,136,0.15)":"transparent",
+            color:protocolMode?"#0d9488":"#64748b",
+            border:`1px solid ${protocolMode?"rgba(13,148,136,0.4)":"rgba(148,163,184,0.25)"}`,
+            fontSize:12,padding:"5px 14px",
+          }}
+        >🧪 {t.mediaProtocolBtn}</button>
+      </div>
+
+      {!protocolMode&&<>
+      {/* Sample type filter */}
+      <div style={{marginBottom:10}}>
+        <div style={{fontSize:10,fontFamily:"'Space Mono',monospace",color:"#94a3b8",letterSpacing:"0.1em",marginBottom:6,textTransform:"uppercase"}}>
+          {t.mediaSampleFilter}
+        </div>
+        <div style={{display:"flex",flexWrap:"wrap",gap:6}}>
+          <button
+            className="mv-btn"
+            onClick={()=>setSampleFilter("all")}
+            style={{
+              background:sampleFilter==="all"?"rgba(13,148,136,0.12)":"transparent",
+              color:sampleFilter==="all"?"#0d9488":"#64748b",
+              border:`1px solid ${sampleFilter==="all"?"rgba(13,148,136,0.3)":"rgba(148,163,184,0.2)"}`,
+              padding:"4px 12px",fontSize:12,
+            }}
+          >{t.mediaAll}</button>
+          {SAMPLE_TYPES.map(st=>(
+            <button key={st.id} className="mv-btn"
+              onClick={()=>setSampleFilter(st.id)}
+              style={{
+                background:sampleFilter===st.id?"rgba(13,148,136,0.12)":"transparent",
+                color:sampleFilter===st.id?"#0d9488":"#64748b",
+                border:`1px solid ${sampleFilter===st.id?"rgba(13,148,136,0.3)":"rgba(148,163,184,0.2)"}`,
+                padding:"4px 12px",fontSize:12,
+              }}
+            >{lang==="ru"?st.ru:st.en}</button>
+          ))}
+        </div>
+      </div>
+
+      {/* Medium type filter */}
+      <div style={{marginBottom:16}}>
+        <div style={{fontSize:10,fontFamily:"'Space Mono',monospace",color:"#94a3b8",letterSpacing:"0.1em",marginBottom:6,textTransform:"uppercase"}}>
+          {t.mediaTypeFilter}
+        </div>
+        <div style={{display:"flex",flexWrap:"wrap",gap:6}}>
+          <button
+            className="mv-btn"
+            onClick={()=>setTypeFilter("all")}
+            style={{
+              background:typeFilter==="all"?"rgba(13,148,136,0.12)":"transparent",
+              color:typeFilter==="all"?"#0d9488":"#64748b",
+              border:`1px solid ${typeFilter==="all"?"rgba(13,148,136,0.3)":"rgba(148,163,184,0.2)"}`,
+              padding:"4px 12px",fontSize:12,
+            }}
+          >{t.mediaAll}</button>
+          {MEDIA_TYPES.map(mt=>(
+            <button key={mt.id} className="mv-btn"
+              onClick={()=>setTypeFilter(mt.id)}
+              style={{
+                background:typeFilter===mt.id?`${mt.color}18`:"transparent",
+                color:typeFilter===mt.id?mt.color:"#64748b",
+                border:`1px solid ${typeFilter===mt.id?`${mt.color}44`:"rgba(148,163,184,0.2)"}`,
+                padding:"4px 12px",fontSize:12,
+              }}
+            >{lang==="ru"?mt.ru:mt.en}</button>
+          ))}
+        </div>
+      </div>
+
+      {/* Results count */}
+      <div style={{fontSize:12,color:"#94a3b8",marginBottom:12,fontFamily:"'Space Mono',monospace"}}>
+        {filtered.length} {t.mediaCount}
+        {(query||sampleFilter!=="all"||typeFilter!=="all")&&(
+          <button className="mv-btn"
+            onClick={()=>{setQuery("");setSampleFilter("all");setTypeFilter("all");}}
+            style={{marginLeft:10,fontSize:11,padding:"2px 8px",color:"#f87171",border:"1px solid rgba(248,113,113,0.3)",background:"transparent"}}
+          >{t.mediaClear}</button>
+        )}
+      </div>
+
+      {/* Cards grid */}
+      {filtered.length===0
+        ?<div style={{textAlign:"center",padding:"48px 0",color:"#94a3b8",fontSize:14}}>{t.mediaNoResults}</div>
+        :<div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(280px,1fr))",gap:12}}>
+          {filtered.map(m=>{
+            const prio=prioLabel(m.priority);
+            return(
+              <div key={m.id} className="mv-card"
+                onClick={()=>setSelected(m)}
+                style={{cursor:"pointer",transition:"transform .15s,box-shadow .15s"}}
+                onMouseEnter={e=>{e.currentTarget.style.transform="translateY(-2px)";e.currentTarget.style.boxShadow="0 8px 24px rgba(13,148,136,0.2)";}}
+                onMouseLeave={e=>{e.currentTarget.style.transform="";e.currentTarget.style.boxShadow="";}}
+              >
+                {/* Card header */}
+                <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:10,gap:8}}>
+                  <div style={{fontFamily:"'Space Mono',monospace",fontWeight:700,fontSize:13,color:"#1e293b",lineHeight:1.3,flex:1}}>
+                    {m.name}
+                  </div>
+                  <span style={{
+                    background:`${typeColor(m.type)}22`,color:typeColor(m.type),
+                    border:`1px solid ${typeColor(m.type)}44`,
+                    borderRadius:5,padding:"2px 7px",fontSize:10,fontWeight:600,
+                    fontFamily:"'Space Mono',monospace",whiteSpace:"nowrap",flexShrink:0,
+                  }}>{typeLabel(m.type)}</span>
+                </div>
+
+                {/* Russian name */}
+                <div style={{fontSize:11,color:"#64748b",marginBottom:8,fontStyle:"italic"}}>{m.name_ru}</div>
+
+                {/* Targets */}
+                <div style={{fontSize:11,color:"#475569",marginBottom:10,lineHeight:1.4}}>
+                  🦠 {lang==="ru"?m.targets_ru:m.targets_en}
+                </div>
+
+                {/* Footer */}
+                <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",borderTop:"1px solid rgba(13,148,136,0.1)",paddingTop:8,flexWrap:"wrap",gap:4}}>
+                  <div style={{display:"flex",gap:4,alignItems:"center"}}>
+                    <span style={{fontSize:10,color:"#94a3b8"}}>🌡</span>
+                    <span style={{fontSize:11,fontFamily:"'Space Mono',monospace",color:"#475569"}}>
+                      {m.incubation.temp}°C · {m.incubation.hours_min}–{m.incubation.hours_max}h
+                    </span>
+                  </div>
+                  <div style={{display:"flex",gap:4,alignItems:"center"}}>
+                    {m.article&&<span style={{
+                      background:"rgba(100,255,218,0.08)",color:"#64ffda",
+                      border:"1px solid rgba(100,255,218,0.2)",
+                      borderRadius:5,padding:"1px 6px",fontSize:10,
+                      fontFamily:"'Space Mono',monospace",
+                    }}>📄 {m.article}</span>}
+                    <span style={{
+                      background:`${prio.color}18`,color:prio.color,
+                      borderRadius:5,padding:"2px 7px",fontSize:10,fontWeight:600,
+                      fontFamily:"'Space Mono',monospace",
+                    }}>{prio.label}</span>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      }
+      </>}
+
+      {/* Protocol view */}
+      {protocolMode&&(
+        <div>
+          <div style={{fontSize:12,color:"#64748b",marginBottom:10}}>{t.mediaProtocolHint}</div>
+          <div style={{display:"flex",flexWrap:"wrap",gap:8,marginBottom:20}}>
+            {PROTOCOLS.map(p=>(
+              <button key={p.id} className="mv-btn"
+                onClick={()=>setActiveScenario(p.id)}
+                style={{
+                  background:activeScenario===p.id?"rgba(13,148,136,0.15)":"transparent",
+                  color:activeScenario===p.id?"#0d9488":"#64748b",
+                  border:`1px solid ${activeScenario===p.id?"rgba(13,148,136,0.4)":"rgba(148,163,184,0.2)"}`,
+                  padding:"6px 16px",fontSize:13,fontWeight:activeScenario===p.id?600:400,
+                }}
+              >{t[p.labelKey]}</button>
+            ))}
+          </div>
+          {[
+            {key:"primary",     labelKey:"mediaPrimary",     color:"#0d9488"},
+            {key:"confirmatory",labelKey:"mediaConfirmatory",color:"#d97706"},
+            {key:"resistance",  labelKey:"mediaAmrScreen",   color:"#f87171"},
+          ].map(section=>{
+            const proto=PROTOCOLS.find(p=>p.id===activeScenario);
+            const ids=proto[section.key];
+            const items=ids.map(id=>MEDIA.find(m=>m.id===id)).filter(Boolean);
+            return(
+              <div key={section.key} style={{marginBottom:20}}>
+                <div style={{
+                  fontSize:10,fontFamily:"'Space Mono',monospace",color:section.color,
+                  letterSpacing:"0.1em",textTransform:"uppercase",marginBottom:8,
+                  borderLeft:`3px solid ${section.color}`,paddingLeft:8,
+                }}>
+                  {t[section.labelKey]}
+                </div>
+                <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(280px,1fr))",gap:10}}>
+                  {items.map((m,i)=>{
+                    const prio=prioLabel(m.priority);
+                    return(
+                      <div key={m.id} className="mv-card"
+                        onClick={()=>setSelected(m)}
+                        style={{cursor:"pointer",borderLeft:`3px solid ${section.color}44`,transition:"transform .15s"}}
+                        onMouseEnter={e=>{e.currentTarget.style.transform="translateY(-2px)";}}
+                        onMouseLeave={e=>{e.currentTarget.style.transform="";}}
+                      >
+                        <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",gap:8,marginBottom:6}}>
+                          <div style={{display:"flex",alignItems:"center",gap:6}}>
+                            <span style={{
+                              background:`${section.color}22`,color:section.color,
+                              borderRadius:"50%",width:20,height:20,display:"flex",
+                              alignItems:"center",justifyContent:"center",
+                              fontSize:10,fontWeight:700,flexShrink:0,
+                            }}>{i+1}</span>
+                            <div style={{fontFamily:"'Space Mono',monospace",fontWeight:700,fontSize:13,color:"#1e293b",lineHeight:1.3}}>
+                              {m.name}
+                            </div>
+                          </div>
+                          {m.article&&<span style={{
+                            background:"rgba(100,255,218,0.08)",color:"#64ffda",
+                            border:"1px solid rgba(100,255,218,0.2)",
+                            borderRadius:5,padding:"1px 6px",fontSize:10,
+                            fontFamily:"'Space Mono',monospace",whiteSpace:"nowrap",flexShrink:0,
+                          }}>📄 {m.article}</span>}
+                        </div>
+                        <div style={{fontSize:11,color:"#64748b",marginBottom:4,fontStyle:"italic"}}>{m.name_ru}</div>
+                        <div style={{fontSize:11,color:"#475569",lineHeight:1.4}}>
+                          🦠 {lang==="ru"?m.targets_ru:m.targets_en}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            );
+          })}
         </div>
       )}
     </div>
@@ -1834,7 +2355,7 @@ export default function App(){
         <div style={{display:"flex",flex:1,justifyContent:"center",borderBottom:"none",overflowX:"auto"}}>
           {t.tabs.map((label,i)=>(
             <button key={i} className={`mv-tab${tab===i?" active":""}`} onClick={()=>setTab(i)}>
-              {["⚗️","📋","🎯","🩺"][i]} {label}
+              {["⚗️","📋","🎯","🩺","🧫"][i]} {label}
             </button>
           ))}
         </div>
@@ -1886,6 +2407,7 @@ export default function App(){
         {tab===1&&<DiaryTab t={t} lang={lang} baseline={baseline}/>}
         {tab===2&&<RecommendationsTab log={calcLog} mb={mb} t={t} lang={lang} baseline={baseline}/>}
         {tab===3&&<SymptomsTab t={t} lang={lang}/>}
+        {tab===4&&<MediaLabTab t={t} lang={lang}/>}
       </main>
 
       {/* ── FOOTER ── */}

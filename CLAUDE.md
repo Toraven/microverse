@@ -4,12 +4,19 @@ This file tells Claude how to work with this project.
 
 ---
 
+## Error Patterns & Memory
+
+Recurring mistakes and their fixes are logged in **[PLAN/MEMORY.md](PLAN/MEMORY.md)**.
+Read it before starting any non-trivial change to this codebase.
+
+---
+
 ## Project Identity
 
-**Name:** MicroVerse: Gut & Food Lab  
-**Type:** React SPA — educational microbiology + nutrition platform  
-**Language:** Trilingual UI — Russian (primary), English, Latin (scientific names)  
-**Stack:** React 18, Vite, Tailwind CSS (utility classes only), D3.js (SVG animations)  
+**Name:** MicroVerse: Gut & Food Lab
+**Type:** React SPA — educational microbiology + nutrition platform
+**Language:** Trilingual UI — Russian (primary), English, Latin (scientific names)
+**Stack:** React 18, Vite, Tailwind CSS (utility classes only), D3.js (SVG animations)
 **Author:** Octavian, Kharkiv
 
 ---
@@ -20,23 +27,27 @@ Users enter food they eat → the app shows how that food affects their gut micr
 
 Core loop:
 1. User searches and adds foods with gram amounts
-2. `calcMicrobiome(log)` recalculates 8 bacteria scores in real time
+2. `calcMicrobiome(log, baseline)` recalculates 8 bacteria scores in real time
 3. SVG visualization updates — bacteria "blobs" grow or shrink
 4. Health score ring updates (0–100)
 5. Recommendations tab shows what to add or reduce
 
 ---
 
-## Code Conventions
+## Actual File Structure
 
-- All components in `src/components/` organized by feature
-- Core engine logic in `src/engine/microbiome.js` — pure functions only, no React
-- Food database in `src/data/foods.js` — exported as `FOODS` array
-- Bacteria definitions in `src/data/bacteria.js` — exported as `BACTERIA` array and `BASELINE` object
-- Translations in `src/i18n/translations.js` — exported as `T` object with `T.ru` and `T.en`
-- CSS variables defined in `src/styles/global.css`
-- Color palette: `--color-teal: #64ffda`, `--color-cyan: #00d4ff`, `--color-purple: #a78bfa`, `--color-green: #34d399`, `--color-red: #f87171`, `--color-orange: #fb923c`, `--color-bg: #020c1b`
-- Fonts: Space Mono (headings, numbers, monospace), DM Sans (body)
+Everything currently lives in `src/App.jsx` (monolith). The only separate data file is:
+
+| File | Contents |
+|------|----------|
+| `src/App.jsx` | All UI, state, components, translations, inline styles |
+| `src/data/media.js` | Culture media DB — `MEDIA`, `SAMPLE_TYPES`, `MEDIA_TYPES`, `PRIORITY_LABELS`, `ATMOS_LABELS` |
+| `src/main.jsx` | React entry point |
+| `PLAN/MEMORY.md` | Recurring error log |
+| `ARCHITECTURE.md` | Full architecture reference |
+
+> `src/components/`, `src/engine/`, `src/i18n/`, `src/styles/`, `src/data/foods.js`
+> are **planned** structure — not yet extracted from App.jsx.
 
 ---
 
@@ -53,18 +64,20 @@ Core loop:
 | eco | Escherichia coli O157 | bad |
 | can | Candida albicans | bad |
 
-Baseline scores: `{bif:65, lac:62, akk:52, fae:58, bac:50, cdi:10, eco:8, can:6}`
+Baseline is age-dependent (see `BASELINES_BY_AGE` in App.jsx).
+Young adult reference: `{bif:65, lac:62, akk:52, fae:58, bac:50, cdi:10, eco:8, can:6}`
 
 ---
 
-## Key Functions (engine/microbiome.js)
+## Key Functions (all in App.jsx)
 
 ```js
-calcNutrition(log)      // → {cal, prot, fat, carb, fib}
-calcMicrobiome(log)     // → {bif, lac, akk, fae, bac, cdi, eco, can}
-healthScore(mb)         // → 0–100 integer
-scoreColor(score)       // → hex color string
-scoreLabel(score, t)    // → translated label string
+calcNutrition(log)             // → {cal, prot, fat, carb, fib}
+calcMicrobiome(log, baseline)  // → {bif, lac, akk, fae, bac, cdi, eco, can}
+healthScore(mb)                // → 0–100 integer
+scoreColor(score)              // → hex color string
+scoreLabel(score, t)           // → translated label string
+getBaselineByAge(age)          // → baseline object for given numeric age
 ```
 
 ---
@@ -75,43 +88,60 @@ Each food object must have ALL these fields:
 ```js
 {ic, id, ru, en, cal, p, f, c, fib, pre, pro, boost:[], sup:[], sug}
 ```
-- `pre` = prebiotic score 0–10 (how well it feeds beneficial bacteria)
-- `pro` = boolean (contains live probiotic cultures)
-- `boost` = array of bacteria IDs that grow when eating this food
-- `sup` = array of bacteria IDs that are suppressed
-- `sug` = "simple" | "complex" | "none"
+- `pre` = prebiotic score 0–10
+- `pro` = boolean (live cultures)
+- `boost` = bacteria IDs that grow
+- `sup` = bacteria IDs that are suppressed
+- `sug` = `"simple"` | `"complex"` | `"none"`
+
+---
+
+## When Adding New Media (src/data/media.js)
+
+Each medium object must have ALL these fields:
+```js
+{id, name, name_ru, manufacturer, type, sample_types,
+ targets_ru, targets_en, incubation:{temp,hours_min,hours_max,atmosphere},
+ colony_ru, colony_en, use_ru, use_en,
+ resistance_markers:[], selectivity, priority}
+```
+- `article` is optional — catalogue number shown as badge
+- Verify `id` is unique before adding
+- After adding to `PROTOCOLS`, run: `PROTOCOLS.flatMap(p=>[...p.primary,...p.confirmatory,...p.resistance]).filter(id=>!MEDIA.find(m=>m.id===id))` — must return `[]`
 
 ---
 
 ## Design Rules
 
-- Dark theme only (`#020c1b` background)
-- Bioluminescent aesthetic — glow effects on active elements
+- **Light theme** — body background `#8fd8cc`, cards `linear-gradient(135deg,#d4f5ef,#c2f0e8)`
+- Bioluminescent accents — teal glows on active elements
 - Animations: `blobPulse` for good bacteria, `badPulse` for pathogens
-- Never use solid white text — use `#ccd6f6` (light blue-white)
-- Cards: `background: rgba(10,22,40,.85)` + `border: 1px solid rgba(100,255,218,.1)`
-- Buttons: `.mv-btn` base class + `.mv-btn-primary` / `.mv-btn-ghost` / `.mv-btn-danger`
+- Text: primary `#1e293b`, secondary `#475569`, muted `#64748b`
+- Cards: class `mv-card` — gradient bg + `border: 1px solid rgba(13,148,136,.3)`
+- Buttons: `.mv-btn` base + `.mv-btn-primary` / `.mv-btn-ghost` / `.mv-btn-danger`
+- Fonts: Space Mono (headings, numbers, monospace), DM Sans (body)
+- Accent colors: teal `#0d9488`, cyan `#00d4ff`, purple `#a78bfa`, green `#34d399`, red `#f87171`, orange `#fb923c`
 
 ---
 
 ## Planned Features (next iterations)
 
-1. **Age profiles** — different baseline microbiome for child / teen / adult / senior
-2. **User profile** — name, age, saved diary history (localStorage)
-3. **PDF export** — generate daily report
-4. **Extended food DB** — expand from 77 to 200+ items
-5. **Online deploy** — Vercel with custom domain
-6. **Symptom mode** — user describes symptoms → app suggests foods
+- [x] Age profiles — child / teen / adult / senior baselines
+- [x] Symptom mode — symptoms → food recommendations
+- [x] MediaLab — culture media database with search + filters
+- [x] Clinical seeding protocols (UTI / Sepsis / GI / Wound / Respiratory)
+- [ ] User profile — name, age, diary history (localStorage)
+- [ ] PDF export — daily report
+- [ ] Extended food DB — 200+ items
+- [ ] Online deploy — Vercel with custom domain
 
 ---
 
 ## Running Locally
 
 ```bash
-npm create vite@latest microverse -- --template react
-cd microverse
+cd "Work /microverse"
 npm install
-# Copy App.jsx → src/App.jsx
 npm run dev
 # Opens at http://localhost:5173
 ```
@@ -123,5 +153,8 @@ npm run dev
 - Always preserve trilingual support (ru/en/Latin) when adding features
 - The SVG viewBox is `480×285` — bacteria cx/cy positions must stay within these bounds
 - `calcMicrobiome` must remain a pure function (no side effects)
+- `calcMicrobiome` now takes `baseline` as second argument — always pass it
 - When expanding the food database, verify that bacteria IDs in `boost[]` and `sup[]` match the 8 defined IDs
 - Health score formula: `good_avg × 0.68 − bad_avg × 0.32 + 4` — do not change without discussion
+- Translation keys must be added in both `T.ru` and `T.en` simultaneously
+- After any JSX structural change, call `getDiagnostics` before proceeding
